@@ -1,0 +1,6 @@
+* add log4j
+* add hibernate and mysql
+* implement run method in clienthandler
+* set main-class in meta-inf, via maven?
+* should we use commons-configuration instead of args to main?
+* add connection pooling
