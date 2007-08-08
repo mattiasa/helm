@@ -4,4 +4,4 @@
 * set main-class in meta-inf, via maven?
 * should we use commons-configuration instead of args to main?
 * add connection pooling
-* add tests
+* add more tests

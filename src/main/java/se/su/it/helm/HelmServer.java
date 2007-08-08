@@ -8,12 +8,17 @@ public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
 	private Thread serverThread;
 	private boolean isRunning;
+	private String version;
 	
 	public HelmServer(int port) throws IOException {
 		serverSocket = new ServerSocket(port);
 		isRunning = true;
 		serverThread = new Thread(this);
 		serverThread.start();
+		version = "helm-0.0.1";
+	}
+	public String getVersion() {
+		return version;
 	}
 	public void run() {
 		while(isRunning) {

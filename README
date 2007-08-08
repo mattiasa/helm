@@ -1,9 +1,13 @@
-=About
+==About
 Helm - a greylist protocol java server
 
-=Build
+==Build
 Make sure you have Java and Maven2 installed.
 Call 'mvn install' to build target/helm-<version>.jar.
 
-=Use
+==Use
 Start HelmServer 'java -cp helm-<version>.jar se.su.it.helm.HelmServer <port>'.
+
+==Test
+Make sure you have jruby and rspec gem installed.
+Call 'jruby -S spec -fs helm_server_sepc.rb' to run the tests.
