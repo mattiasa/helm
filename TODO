@@ -5,3 +5,4 @@
 * should we use commons-configuration instead of args to main?
 * add connection pooling
 * add more tests
+* fix load_path in rspec's
