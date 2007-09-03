@@ -18,7 +18,9 @@ class ClientHandler extends Thread {
 	public void run(){
 		try {
 		 	String message;
-		 	while ((message = in.readLine()) != null) {
+			System.out.println("  Started child");
+  		 	while ((message = in.readLine()) != null) {
+			  System.out.println("  Read message: " + message);
 		 	}
 
 		 	out.close();

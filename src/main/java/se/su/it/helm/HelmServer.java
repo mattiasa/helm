@@ -21,16 +21,20 @@ public class HelmServer implements Runnable {
 		return version;
 	}
 	public void run() {
+	  System.out.println("Started main server acceptor");
 		while(isRunning) {
 			try {
+			  System.out.println("Waiting for connection");
 				Socket socket = serverSocket.accept();
 				ClientHandler cl = new ClientHandler(this, socket);
+				System.out.println("Got connection, spawning child");
 				cl.start();
 				
 				Thread.sleep(100);
 			} catch(InterruptedException ie){
-				
+			  ie.printStackTrace();
 			} catch(IOException ioe) {
+			  ioe.printStackTrace();
 			}
 		}
 	}
