@@ -1,8 +1,9 @@
 package se.su.it.helm;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
 
 public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
@@ -12,7 +13,6 @@ public class HelmServer implements Runnable {
 	private Greylist greylist;
 	private Logger log;
 	private boolean stats=false;
-	private boolean stop=false;
 	
 	protected Long requests = new Long(0);
 	

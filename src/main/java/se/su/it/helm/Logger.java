@@ -1,8 +1,5 @@
 package se.su.it.helm;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 public class Logger {
 
 	boolean debug = true;
