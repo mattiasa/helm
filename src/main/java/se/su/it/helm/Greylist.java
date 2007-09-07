@@ -43,7 +43,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, count) " +
+			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connect_count) " +
 					"values (?,?,?,?,?,?)");
 			
 			statement.setString(1, data.getSenderIp());
@@ -60,6 +60,7 @@ public class Greylist {
 			}
 	            
 		} catch(SQLException e) {
+			e.printStackTrace();
 			throw new NonFatalHelmException("Caught exception when inserting data into database.", e);
 		} 
 		finally { 
@@ -188,7 +189,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("SELECT id FROM greylist where ip = ? and first_seen < ? and count >= 1");
+			statement = conn.prepareStatement("SELECT ip FROM greylist where ip = ? and first_seen < ? and connect_count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
 			statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()- delay * 1000));
@@ -203,6 +204,7 @@ public class Greylist {
 			}
 			    
 		} catch(SQLException e) {
+			e.printStackTrace();
 			throw new NonFatalHelmException("Got SQLException when checking database", e);
 		} 
 		finally { 
@@ -248,13 +250,13 @@ public class Greylist {
 			statement = conn.createStatement();
 			statement.executeUpdate(
 					"CREATE TABLE greylist (" +
-					"		id INTEGER " + /* AUTO_INCREMENT */ "primary key," +
+					/* "		id INTEGER " + /* AUTO_INCREMENT / "primary key," + */ 
 					"		sender VARCHAR(255), " +
 					"		recipient VARCHAR(255)," +
 					"		ip VARCHAR(15),	" +
 					"		last_seen DATETIME," +
 					"		first_seen DATETIME," +
-					"count INTEGER);");
+					"connect_count INTEGER);");
 			//statement.executeQuery();
 
 		} catch(SQLException e) {
