@@ -55,9 +55,10 @@ public class Greylist {
 			
 			
 			log.debug("Executing statement: " + statement);
-			if(!statement.execute()) {
-				log.log("Failed to execute statement " + statement);
-			}
+			statement.execute();
+			//if(!statement.execute()) {
+			//	log.log("Failed to execute statement " + statement);
+			//}
 	            
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -110,7 +111,7 @@ public class Greylist {
 				String sender = rset.getString("sender");
 				String recipient = rset.getString("recipient");
 				Timestamp last_seen = rset.getTimestamp("last_seen");
-				int count = rset.getInt("count");
+				int count = rset.getInt("connection_count");
 			
 				ret = new GreylistData(id, sender, recipient, ip, last_seen, count);
 			}
