@@ -1,9 +1,9 @@
 CREATE TABLE greylist (
-	id integer auto_increment primary key, 
-	sender varchar(255), 
-	recipient varchar(255),
-	ip varchar(15),	
-	last_seen datetime,
-	first_seen datetime,
-	count integer
+	id INTEGER AUTO_INCREMENT PRIMARY KEY, 
+	sender VARCHAR(255), 
+	recipient VARCHAR(255),
+	ip VARCHAR(15),	
+	last_seen DATETIME,
+	first_seen DATETIME,
+	connect_count INTEGER
 );
