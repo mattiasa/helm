@@ -3,8 +3,7 @@ package se.su.it.helm;
 import java.io.*;
 import java.net.*;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration.BaseConfiguration;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterClass;
@@ -44,8 +43,17 @@ public class TestServer {
 	public void setUp() throws Exception {
 		System.out.println("setup db");
 		System.out.println("start helm");
-		Configuration config = new PropertiesConfiguration("test.properties");
+		//jdbcUrl
+		//delay
+		BaseConfiguration config = new BaseConfiguration();
+		Class.forName("org.hsqldb.jdbcDriver");
+
+		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
+		config.setProperty("delay", "10");
+		config.setProperty("serverport", "4712");
+		
 		server = new HelmServer(config);
+		server.createDatabase();
 		// setup server
 	}
 	

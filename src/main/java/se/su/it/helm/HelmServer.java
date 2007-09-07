@@ -19,7 +19,7 @@ public class HelmServer implements Runnable {
 	private Configuration config ;
 	
 	protected Long requests = new Long(0);
-	
+
 	public HelmServer(Configuration config) throws TerminatingHelmException {
 		
 		this.config = config;
@@ -115,6 +115,10 @@ public class HelmServer implements Runnable {
 	public Configuration getConfig() 
 	{
 		return config;
+	}
+	
+	public void createDatabase() throws FatalHelmException, NonFatalHelmException {
+		greylist.createDatabase();
 	}
 	
 }

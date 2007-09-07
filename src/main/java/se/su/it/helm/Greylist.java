@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 
 import org.apache.commons.configuration.Configuration;
@@ -118,6 +119,7 @@ public class Greylist {
 			}
 	            
 		} catch(SQLException e) {
+			e.printStackTrace();
 			throw new NonFatalHelmException("Got SQLException when looking up in database", e);
 		} 
 		finally { 
@@ -234,6 +236,35 @@ public class Greylist {
 		
 		return checkAWL(data);
 		
+	}
+	
+	public void createDatabase() throws FatalHelmException, NonFatalHelmException
+	{
+		Statement statement;
+		Connection conn = null;
+
+		try {
+			conn = db.getConnection();
+			statement = conn.createStatement();
+			statement.executeUpdate(
+					"CREATE TABLE greylist (" +
+					"		id INTEGER " + /* AUTO_INCREMENT */ "primary key," +
+					"		sender VARCHAR(255), " +
+					"		recipient VARCHAR(255)," +
+					"		ip VARCHAR(15),	" +
+					"		last_seen DATETIME," +
+					"		first_seen DATETIME," +
+					"count INTEGER);");
+			//statement.executeQuery();
+
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new FatalHelmException("Got SQLException when createing database", e);
+		} 
+		finally { 
+			if(conn != null)
+				db.returnConnection(conn);
+		}
 	}
 	
 }
