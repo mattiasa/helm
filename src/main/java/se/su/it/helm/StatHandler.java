@@ -19,36 +19,26 @@ public class StatHandler extends Thread {
 		
 		long lasttime=System.currentTimeMillis();
 		long curtime;
-		
 		long curreqs;
 		long lastreqs = server.getRequests();
 		
 		while(server.isRunning()) {
-
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-			}
+			} catch (InterruptedException e) {}
 			
 			curtime = System.currentTimeMillis();
 			curreqs = server.getRequests();
 			
 			long deltatime = curtime-lasttime;
 			long deltareqs = curreqs-lastreqs;
-			
-			
+
 			long freq = deltareqs/deltatime;
-			
-			
+
 			log.debug("Processed " + freq + " requests/second.");
 			
 			lasttime = curtime;
 			lastreqs = curreqs;
-			
-			
 		}
-		
-		
-		
 	}
 }

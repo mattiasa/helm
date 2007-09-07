@@ -1,5 +1,8 @@
 package se.su.it.helm;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Logger {
 
 	boolean debug = true;
@@ -13,5 +16,9 @@ public class Logger {
 	public void log(String msg) {
 		System.err.println(msg);
 	}
-	
+
+	public void error(String msg) {
+		System.err.println(msg);
+		
+	}
 }

@@ -18,14 +18,12 @@ import org.testng.annotations.Test;
 public class Db {
 	Logger log;
 	
-	public Db(String connectURI, Logger log) {
+	public Db(String connectURI, Logger log) throws TerminatingHelmException {
 		this.log = log;
-		
+		/*
 		try {
-			setupDriver(connectURI);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		*/
+		setupDriver(connectURI);
 	}
 	
 	public Connection getConnection() throws SQLException {
@@ -35,15 +33,18 @@ public class Db {
         return conn;
 	}
 	
-	public void returnConnection(Connection conn) {
+	public void returnConnection(Connection conn) throws NonFatalHelmException {
+		
 		try { 
 			conn.close(); 
-		} catch(Exception e) { 
-			e.printStackTrace();
+		
+		} catch(SQLException e) { 
+			throw new NonFatalHelmException("Caught exception when terminating db connection", e);
 		}
+		
 	}
 	
-    public void setupDriver(String connectURI) throws Exception {
+    public void setupDriver(String connectURI) throws TerminatingHelmException {
     	String driver = "com.mysql.jdbc.Driver";
     	/*
     	 * Begin by loading the mysql driver
@@ -52,8 +53,7 @@ public class Db {
         try {
             Class.forName(driver);
         } catch (ClassNotFoundException e) {
-            log.log("Couldn't find jdbc driver" + driver);
-        	e.printStackTrace();
+            throw new TerminatingHelmException("Couldn't find jdbc driver" + driver, e);
         }
     	
     	//
@@ -84,18 +84,20 @@ public class Db {
         //
         // Finally, we create the PoolingDriver itself...
         //
-        Class.forName("org.apache.commons.dbcp.PoolingDriver");
-        PoolingDriver poolDriver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
-
-        //
-        // ...and register our pool with it.
-        //
-        poolDriver.registerPool("helm",connectionPool);
-
-        //
-        // Now we can just use the connect string "jdbc:apache:commons:dbcp:example"
-        // to access our pool of Connections.
-        //
+        String poolingDriver = "org.apache.commons.dbcp.PoolingDriver";
+        try {
+        	
+        	Class.forName(poolingDriver);
+        } catch (ClassNotFoundException e) {
+            throw new TerminatingHelmException("Couldn't find pooling driver " + poolingDriver, e);
+        }
+        
+        try {
+        	PoolingDriver poolDriver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+        	poolDriver.registerPool("helm",connectionPool);
+        } catch (SQLException e) {
+        	throw new TerminatingHelmException("Could not initiate dbcp", e); 
+        }
     }
 	
 	/*

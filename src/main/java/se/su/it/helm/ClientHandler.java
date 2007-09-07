@@ -17,15 +17,21 @@ class ClientHandler extends Thread {
 	private Socket socket;
 	private Greylist greylist;
 	
-	
-	
-	public ClientHandler(HelmServer server, Socket socket, Logger log, Greylist greylist) throws IOException {
+	public ClientHandler(HelmServer server, Socket socket, Logger log, Greylist greylist) throws FatalHelmException {
 		this.server = server;
 		this.socket = socket;
 		this.log = log;
 		this.greylist = greylist;
-		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	    out = new PrintWriter(socket.getOutputStream(), true);
+		try {
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		} catch (IOException e) {
+			throw new FatalHelmException("Caught IOException when creating input reader", e);
+		}
+		try {
+			out = new PrintWriter(socket.getOutputStream(), true);
+		} catch (IOException e) {
+			throw new FatalHelmException("Caught IOException when creating output writer", e);
+		}
 	}
 	
 	/**
@@ -33,7 +39,7 @@ class ClientHandler extends Thread {
 	 * @return object with data about session
 	 */
 	
-	private ConnectionData readObject(BufferedReader in) {
+	private ConnectionData readObject(BufferedReader in) throws NonFatalHelmException, FatalHelmException {
 		ConnectionData ret = new ConnectionData();
 		
 		Map<String, String> map = new HashMap<String, String>(); 
@@ -45,22 +51,21 @@ class ClientHandler extends Thread {
 				
 				/* null means end of stream */
 				if(msg == null) {
-					return null;
+					throw new FatalHelmException("got null back from readLine", null);
 				}
 			} 
 			catch (IOException ioe) {
-				ioe.printStackTrace();
-				return null;
+				throw new FatalHelmException("Got IOException from readline", ioe);
 			}
 			
+			/* End of this object */
 			if(msg.equals("")) {
 				break;
 			}
 			
 			int index = msg.indexOf('=');
 			if(index == -1) {
-				log.log("String index not found in data " + msg);
-				return null;
+				throw new FatalHelmException("String index not found in data " + msg, null);
 			}
 			String var = msg.substring(0, index);
 			String value = msg.substring(index+1);
@@ -79,9 +84,7 @@ class ClientHandler extends Thread {
 				ret.getSenderIp() != null) {
 			return ret;
 		} else {
-			
-			log.debug("Returning null");
-			return null;
+			throw new FatalHelmException("Did not get mandatory data", null);
 		}
 	}
 	
@@ -89,34 +92,42 @@ class ClientHandler extends Thread {
 		ConnectionData data = new ConnectionData();
 		log.debug("  Started child");
 		try {
-		
-  		 	while (true) {
-  		 		data = readObject(in); 
+			while (server.isRunning()) {
+				String action;
   		 		
-  		 		if(data == null)
-  		 			break;
-  		 			
-  		 		try {
-  		 			if(greylist.check(data)) {
-  		 				out.println("action=dunno");
-  		 			} else {
-  		 				out.println("action=defer_if_permit");
-  		 			}
-  		 		} catch (Exception e) {
-  		 			/* fall through */
-  		 			e.printStackTrace();
-  		 			out.println("action=dunno");
+				try {
+					data = readObject(in); 
+					if(data == null)
+						break;
+  		 		
+					log.debug("Read object:\n" + data);
+					
+					if(greylist.check(data)) {
+						action="dunno";
+					} else {
+						action="defer_if_permit";
+					}
+  		 		} catch (NonFatalHelmException e) {
+  		 			log.log("Caught non-fatal exception " + e.getString());
+  		 			action = "dunno";
   		 		}
-  		 		// log.debug("Read object:\n" + data);
-
-  		 	}
-  		 	
-		 	out.close();
-		 	in.close();
-		 	socket.close();
-	     
-		 	log.debug("Client terminated");
-		} catch(IOException e) {
+  		 		out.println("action=" + action);
+			}
+		} catch (FatalHelmException e) {
+			log.error("Caught FatalHelmException. Terminating thread: " + e.getString());
+			
+			/* This is the ultimate fall-through. We tell postfix to pass the email and then close the socket */
+			out.println("action=dunno");
+		} finally {
+			try {
+				if(out != null)
+					out.close();
+				if(in != null)
+					in.close();
+				if(socket != null)
+					socket.close();
+			} catch(IOException e) { } 
+			
 		}
 	}
 }

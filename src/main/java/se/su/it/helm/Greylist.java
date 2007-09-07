@@ -12,10 +12,12 @@ public class Greylist {
 	Db db;
 	Logger log;
 	
-	public Greylist(Logger log) {
+	public Greylist(Logger log) throws TerminatingHelmException {
 		this.log = log;
 		
-		db = new Db("jdbc:mysql://srv2.db.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
+		// db = new Db("jdbc:mysql://srv2.db.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
+		db = new Db("jdbc:mysql://mdrop2.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
+	
 	}
 	
 	/**
@@ -24,7 +26,7 @@ public class Greylist {
 	 * @return
 	 */
 
-	public void putGreylistData(ConnectionData data) {
+	public void putGreylistData(ConnectionData data) throws NonFatalHelmException {
 		
 		PreparedStatement statement;
 
@@ -52,7 +54,7 @@ public class Greylist {
 			}
 	            
 		} catch(SQLException e) {
-			e.printStackTrace();
+			throw new NonFatalHelmException("Caught exception when inserting data into database.", e);
 		} 
 		finally { 
 			if(conn != null)
@@ -71,7 +73,7 @@ public class Greylist {
 	 * @return a GreylistData object or null if the entry was not in the database
 	 */
 
-	public GreylistData getGreylistData(ConnectionData data) {
+	public GreylistData getGreylistData(ConnectionData data) throws NonFatalHelmException {
 		
 		PreparedStatement statement;
 		GreylistData ret = null;
@@ -111,7 +113,7 @@ public class Greylist {
 			}
 	            
 		} catch(SQLException e) {
-			e.printStackTrace();
+			throw new NonFatalHelmException("Got SQLException when looking up in database", e);
 		} 
 		finally { 
 			if(conn != null)
@@ -129,7 +131,7 @@ public class Greylist {
 	 * @param data - Data about the smtp connection
 	 */
 
-	public void updateGreylistData(GreylistData data) {
+	public void updateGreylistData(GreylistData data) throws NonFatalHelmException {
 		
 		PreparedStatement statement;
 		
@@ -153,7 +155,8 @@ public class Greylist {
 
 	            
 		} catch(SQLException e) {
-			e.printStackTrace();
+			throw new NonFatalHelmException("Got SQLException when updating database", e);
+			
 		} 
 		finally { 
 			if(conn != null)
@@ -163,7 +166,7 @@ public class Greylist {
 		
 	}
 
-	public boolean checkAWL(ConnectionData data) {
+	public boolean checkAWL(ConnectionData data) throws NonFatalHelmException {
 		
 		PreparedStatement statement;
 		boolean ret = false;
@@ -191,7 +194,7 @@ public class Greylist {
 			}
 			    
 		} catch(SQLException e) {
-			e.printStackTrace();
+			throw new NonFatalHelmException("Got SQLException when checking database", e);
 		} 
 		finally { 
 			if(conn != null)
@@ -205,7 +208,7 @@ public class Greylist {
 		
 	
 	
-	public boolean check(ConnectionData data) {
+	public boolean check(ConnectionData data) throws NonFatalHelmException {
 		
 /*		Db db = new Db("jdbc:mysql://srv2.db.su.se/helm_devel?user=helm_devel&password=nv7UI0nkz");*/
 		
