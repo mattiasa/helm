@@ -3,6 +3,8 @@ package se.su.it.helm;
 import java.io.*;
 import java.net.*;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.AfterClass;
@@ -42,14 +44,15 @@ public class TestServer {
 	public void setUp() throws Exception {
 		System.out.println("setup db");
 		System.out.println("start helm");
-		server = new HelmServer(testServerPort);
+		Configuration config = new PropertiesConfiguration("test.properties");
+		server = new HelmServer(config);
 		// setup server
 	}
 	
 	@AfterClass
 	public void tearDown() {
 		System.out.println("stop helm");
-		server.kill();
+		server.stop();
 	}
 	
 	@Test (groups = {"connnection"})

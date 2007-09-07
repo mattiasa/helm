@@ -3,6 +3,8 @@ package se.su.it.helm;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
 
 public class HelmServer implements Runnable {
@@ -14,17 +16,26 @@ public class HelmServer implements Runnable {
 	private Logger log;
 	private boolean stats=false;
 	
+	private Configuration config ;
+	
 	protected Long requests = new Long(0);
 	
-	public HelmServer(int port) throws TerminatingHelmException {
+	public HelmServer(Configuration config) throws TerminatingHelmException {
+		
+		this.config = config;
+		
+		int serverport = config.getInt("serverport");
+		if(serverport < 1 || serverport > 65536)
+			throw new IllegalArgumentException();
+		
 		try {
-			serverSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(serverport);
 		} catch (IOException e) {
-			throw new TerminatingHelmException("Couldn't create server socket on port " + port, e);
+			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
 		isRunning = true;
 		log = new Logger();
-		greylist = new Greylist(log);
+		greylist = new Greylist(config, log);
 		serverThread = new Thread(this);
 		serverThread.start();
 		version = "helm-0.0.1";
@@ -75,13 +86,14 @@ public class HelmServer implements Runnable {
 		try {
 			switch(args.length) {
 				case 1:
-					int port = Integer.parseInt(args[0]);
-					if(port < 1 || port > 65536)
-						throw new IllegalArgumentException();
-					new HelmServer(port);
+					
+					Configuration cnf = new PropertiesConfiguration(args[0]);
+					
+	
+					new HelmServer(cnf);
 					break;
 				default:
-					System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <port>");
+					System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile>");
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -99,4 +111,10 @@ public class HelmServer implements Runnable {
 			requests++;
 		}
 	}
+	
+	public Configuration getConfig() 
+	{
+		return config;
+	}
+	
 }

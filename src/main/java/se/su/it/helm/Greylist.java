@@ -6,16 +6,22 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import org.apache.commons.configuration.Configuration;
+
 public class Greylist {
 
 	Db db;
 	Logger log;
+	Configuration config;
 	
-	public Greylist(Logger log) throws TerminatingHelmException {
+	public Greylist(Configuration config, Logger log) throws TerminatingHelmException {
+		this.config = config;
 		this.log = log;
 		
 		// db = new Db("jdbc:mysql://srv2.db.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
-		db = new Db("jdbc:mysql://mdrop2.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
+		db = new Db(config.getString("jdbcUrl"), log);
+				
+		// "jdbc:mysql://mdrop2.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
 	
 	}
 	
@@ -172,7 +178,9 @@ public class Greylist {
 		
 		Connection conn = null;
 		ResultSet rset = null;
-	        
+	    
+		int delay = config.getInt("delay");
+		
 		try {
 	        	
 			log.debug("Getting connection");
@@ -181,7 +189,7 @@ public class Greylist {
 			statement = conn.prepareStatement("SELECT id FROM greylist where ip = ? and first_seen < ? and count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
-			statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()- 60 * 1000));
+			statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()- delay * 1000));
 			
 			// log.debug("Executing statement: " + statement);
 			rset = statement.executeQuery();
@@ -214,9 +222,11 @@ public class Greylist {
 		GreylistData gl = getGreylistData(data);
 		long currentTime = System.currentTimeMillis();
 		
+		int delay = config.getInt("delay");
+		
 		if(gl == null) {
 			putGreylistData(data);
-		} else if(gl.getLast_seen().before(new Timestamp(currentTime - 60 * 1000 ))) {
+		} else if(gl.getLast_seen().before(new Timestamp(currentTime - delay * 1000 ))) {
 			gl.setCount(gl.getCount()+1);
 			gl.setLast_seen(new Timestamp(currentTime));
 			updateGreylistData(gl);
