@@ -79,7 +79,10 @@ public class Db {
         // the classes that implement the pooling functionality.
         //
         PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(connectionFactory,connectionPool,null,null,false,true);
-
+        
+        // Just to remove eclipse warning 
+        poolableConnectionFactory.toString();
+        
         //
         // Finally, we create the PoolingDriver itself...
         //

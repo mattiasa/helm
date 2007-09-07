@@ -5,6 +5,10 @@ import java.io.StringWriter;
 
 public class HelmException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4744769495510903736L;
 	Exception cause;
 	String msg;
 	
