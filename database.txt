@@ -5,5 +5,5 @@ CREATE TABLE greylist (
 	ip VARCHAR(15),	
 	last_seen DATETIME,
 	first_seen DATETIME,
-	connect_count INTEGER
+	connection_count INTEGER
 );

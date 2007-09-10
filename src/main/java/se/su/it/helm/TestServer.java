@@ -43,13 +43,12 @@ public class TestServer {
 	public void setUp() throws Exception {
 		System.out.println("setup db");
 		System.out.println("start helm");
-		//jdbcUrl
-		//delay
-		BaseConfiguration config = new BaseConfiguration();
-		Class.forName("org.hsqldb.jdbcDriver");
 
+		BaseConfiguration config = new BaseConfiguration();
+		
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
-		config.setProperty("delay", "10");
+		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
+		config.setProperty("delay", "5");
 		config.setProperty("serverport", "4712");
 		
 		server = new HelmServer(config);
@@ -71,5 +70,35 @@ public class TestServer {
 					"client_address=130.237.162.110",	
 					"action=defer_if_permit");
 	}
+	
+	@Test (groups = {"connnection"})
+	public void connectionBlockTest() throws Exception {
+		System.out.println("connection test");
+		testMessage("sender=block-s@su.se\n" + 
+					"recipient=block-r@su.se\n" +	
+					"client_address=130.237.162.2",	
+					"action=defer_if_permit");
+	}
 
+	@Test (groups = {"connnection"})
+	public void connectionPassTest() throws Exception {
+		System.out.println("connection test");
+		testMessage("sender=pass-s@su.se\n" + 
+					"recipient=pass-r@su.se\n" +	
+					"client_address=130.237.162.3",	
+					"action=defer_if_permit");
+	
+		Thread.sleep(6000);
+		
+		testMessage("sender=pass-s@su.se\n" + 
+					"recipient=pass-r@su.se\n" +	
+					"client_address=130.237.162.3",	
+					"action=dunno");
+
+		
+	}
+
+	
+	
+	
 }

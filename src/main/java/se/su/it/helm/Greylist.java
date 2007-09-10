@@ -20,7 +20,9 @@ public class Greylist {
 		this.log = log;
 		
 		// db = new Db("jdbc:mysql://srv2.db.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
-		db = new Db(config.getString("jdbcUrl"), log);
+		db = new Db(config.getString("jdbcDriver"), 
+					config.getString("jdbcUrl"),
+					log);
 				
 		// "jdbc:mysql://mdrop2.su.se/helm_devel?user=helm_devel&password=bF6f4qgEme7QkL8o", log);
 	
@@ -43,7 +45,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connect_count) " +
+			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connection_count) " +
 					"values (?,?,?,?,?,?)");
 			
 			statement.setString(1, data.getSenderIp());
@@ -94,7 +96,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("SELECT * FROM greylist where ip = ? and sender = ? and recipient = ?");
+			statement = conn.prepareStatement("SELECT ip,sender,recipient,last_seen,connection_count FROM greylist where ip = ? and sender = ? and recipient = ?");
 			
 			statement.setString(1, data.getSenderIp());
 			statement.setString(2, data.getSenderAddress());
@@ -106,14 +108,13 @@ public class Greylist {
 			
 			if(rset.next()) { 
 			
-				int id = rset.getInt("id");
 				String ip = rset.getString("ip");
 				String sender = rset.getString("sender");
 				String recipient = rset.getString("recipient");
 				Timestamp last_seen = rset.getTimestamp("last_seen");
 				int count = rset.getInt("connection_count");
 			
-				ret = new GreylistData(id, sender, recipient, ip, last_seen, count);
+				ret = new GreylistData(0 /*XXX*/ , sender, recipient, ip, last_seen, count);
 			}
 			
 			if(rset.next()) { 
@@ -151,7 +152,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("UPDATE greylist set count=?,last_seen=? where ip = ? and sender = ? and recipient = ?");
+			statement = conn.prepareStatement("UPDATE greylist set connection_count=?,last_seen=? where ip = ? and sender = ? and recipient = ?");
 			
 			statement.setInt(1,data.getCount());
 			statement.setTimestamp(2,data.getLast_seen());
@@ -164,6 +165,7 @@ public class Greylist {
 
 	            
 		} catch(SQLException e) {
+			e.printStackTrace();
 			throw new NonFatalHelmException("Got SQLException when updating database", e);
 			
 		} 
@@ -190,7 +192,7 @@ public class Greylist {
 			log.debug("Getting connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("SELECT ip FROM greylist where ip = ? and first_seen < ? and connect_count >= 1");
+			statement = conn.prepareStatement("SELECT ip FROM greylist where ip = ? and first_seen < ? and connection_count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
 			statement.setTimestamp(2, new Timestamp(System.currentTimeMillis()- delay * 1000));
@@ -217,7 +219,12 @@ public class Greylist {
 		
 	}
 		
-		
+	/**
+	 * Check if data is allowed to pass or not
+	 * @param data the current connection
+	 * @return true if connection is allowed to pass, false if needs to be defered.
+	 * @throws NonFatalHelmException
+	 */
 	
 	
 	public boolean check(ConnectionData data) throws NonFatalHelmException {
@@ -257,7 +264,7 @@ public class Greylist {
 					"		ip VARCHAR(15),	" +
 					"		last_seen DATETIME," +
 					"		first_seen DATETIME," +
-					"connect_count INTEGER);");
+					"connection_count INTEGER);");
 			//statement.executeQuery();
 
 		} catch(SQLException e) {

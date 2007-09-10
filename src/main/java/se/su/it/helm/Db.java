@@ -17,12 +17,12 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 public class Db {
 	Logger log;
 	
-	public Db(String connectURI, Logger log) throws TerminatingHelmException {
+	public Db(String driver, String connectURI, Logger log) throws TerminatingHelmException {
 		this.log = log;
 		/*
 		try {
 		*/
-		setupDriver(connectURI);
+		setupDriver(driver, connectURI);
 	}
 	
 	public Connection getConnection() throws SQLException {
@@ -43,8 +43,7 @@ public class Db {
 		
 	}
 	
-    public void setupDriver(String connectURI) throws TerminatingHelmException {
-    	String driver = "com.mysql.jdbc.Driver";
+    public void setupDriver(String driver, String connectURI) throws TerminatingHelmException {
     	/*
     	 * Begin by loading the mysql driver
     	 */
