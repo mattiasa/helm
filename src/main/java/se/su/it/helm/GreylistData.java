@@ -6,11 +6,12 @@ import org.testng.annotations.Test;
 
 public class GreylistData {
 
-	public GreylistData(int id, String sender, String recipient, String ip, Timestamp last_seen, int count) { 
+	public GreylistData(int id, String sender, String recipient, String ip, Timestamp first_seen, Timestamp last_seen, int count) { 
 		this.id = id;
 		this.sender = sender;
 		this.recipient = recipient;
 		this.ip = ip;
+		this.first_seen = first_seen;
 		this.last_seen = last_seen;
 		this.count = count;
 	}
@@ -20,6 +21,7 @@ public class GreylistData {
 	protected String recipient;
 	protected String ip;
 	protected Timestamp last_seen;
+	protected Timestamp first_seen;
 	protected int count;
 	
 	public int getCount() {
@@ -45,6 +47,12 @@ public class GreylistData {
 	}
 	public void setLast_seen(Timestamp last_seen) {
 		this.last_seen = last_seen;
+	}
+	public Timestamp getFirst_seen() {
+		return first_seen;
+	}
+	public void setFirst_seen(Timestamp first_seen) {
+		this.first_seen = first_seen;
 	}
 	public String getRecipient() {
 		return recipient;

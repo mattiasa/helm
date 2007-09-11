@@ -51,8 +51,8 @@ class ClientHandler extends Thread {
 				
 				/* null means end of stream */
 				if(msg == null) {
-					
-					throw new FatalHelmException("got null back from readLine", null);
+					log.debug("connection closed");
+					return null;
 				}
 			} 
 			catch (IOException ioe) {
