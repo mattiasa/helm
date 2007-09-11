@@ -120,5 +120,10 @@ public class HelmServer implements Runnable {
 	public void createDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.createDatabase();
 	}
+
+	public void resetDatabase() throws FatalHelmException, NonFatalHelmException {
+		greylist.resetDatabase();
+	}
+
 	
 }

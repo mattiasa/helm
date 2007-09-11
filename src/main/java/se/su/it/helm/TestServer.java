@@ -6,7 +6,9 @@ import java.net.*;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.AfterClass;
+import org.testng.annotations.AfterMethod;
 
 public class TestServer {
 	
@@ -60,6 +62,11 @@ public class TestServer {
 	public void tearDown() {
 		System.out.println("stop helm");
 		server.stop();
+	}
+	
+	@BeforeMethod
+	public void clearDataBase() throws Exception {
+		server.resetDatabase();
 	}
 	
 	@Test (groups = {"connnection"})

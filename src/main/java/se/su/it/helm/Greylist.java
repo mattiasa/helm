@@ -339,7 +339,7 @@ public class Greylist {
 		
 		try {
 			conn = db.getConnection();
-			statement = conn.prepareStatement("DELETE FROM graylist WHERE last_seen <= ?");
+			statement = conn.prepareStatement("DELETE FROM greylist WHERE last_seen <= ?");
 			statement.setTimestamp(1,new Timestamp(lastseen));
 			statement.executeQuery();
 
@@ -351,7 +351,27 @@ public class Greylist {
 			if(conn != null)
 				db.returnConnection(conn);
 		}
-			
-	
 	}
+	
+	public void resetDatabase() throws FatalHelmException, NonFatalHelmException
+	{
+		Statement statement;
+		Connection conn = null;
+
+		try {
+			conn = db.getConnection();
+
+			statement = conn.createStatement();
+			statement.executeUpdate("DELETE FROM greylist");
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new FatalHelmException("Got SQLException when resetting database", e);
+		} 
+		finally { 
+			if(conn != null)
+				db.returnConnection(conn);
+		}
+
+	}
+
 }
