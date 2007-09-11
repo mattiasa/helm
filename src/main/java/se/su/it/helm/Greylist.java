@@ -42,7 +42,7 @@ public class Greylist {
 		    
 		try {
 	        	
-			log.debug("Getting connection");
+			log.debug("Getting db connection");
 			conn = db.getConnection();
 	        	
 			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connection_count) " +
@@ -94,10 +94,10 @@ public class Greylist {
 	        
 		try {
 	        	
-			log.debug("Getting connection");
+			log.debug("Getting db connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("SELECT ip,sender,recipient,first_seen,last_seen,connection_count FROM greylist where ip = ? and sender = ? and recipient = ?");
+			statement = conn.prepareStatement("SELECT id,ip,sender,recipient,first_seen,last_seen,connection_count FROM greylist where ip = ? and sender = ? and recipient = ?");
 			
 			statement.setString(1, data.getSenderIp());
 			statement.setString(2, data.getSenderAddress());
@@ -109,6 +109,7 @@ public class Greylist {
 			
 			if(rset.next()) { 
 			
+				int id = rset.getInt("id");
 				String ip = rset.getString("ip");
 				String sender = rset.getString("sender");
 				String recipient = rset.getString("recipient");
@@ -116,7 +117,7 @@ public class Greylist {
 				Timestamp last_seen = rset.getTimestamp("last_seen");
 				int count = rset.getInt("connection_count");
 			
-				ret = new GreylistData(0 /*XXX*/ , sender, recipient, ip, first_seen, last_seen, count);
+				ret = new GreylistData(id , sender, recipient, ip, first_seen, last_seen, count);
 			}
 			
 			if(rset.next()) { 
@@ -152,16 +153,14 @@ public class Greylist {
 
 		try {
 	        	
-			log.debug("Getting connection");
+			log.debug("Getting db connection");
 			conn = db.getConnection();
 	        	
-			statement = conn.prepareStatement("UPDATE greylist set connection_count=?, last_seen=? where ip = ? and sender = ? and recipient = ?");
+			statement = conn.prepareStatement("UPDATE greylist set connection_count=?, last_seen=? where id = ?");
 			
 			statement.setInt(1,data.getCount());
 			statement.setTimestamp(2,data.getLast_seen());
-			statement.setString(3, data.getIp());
-			statement.setString(4, data.getSender());
-			statement.setString(5, data.getRecipient());
+			statement.setInt(3, data.getId());
 			
 			// log.debug("Executing statement: " + statement);
 			statement.execute();
@@ -229,18 +228,35 @@ public class Greylist {
 		Statement statement;
 		Connection conn = null;
 
+
 		try {
 			conn = db.getConnection();
+
+			String driverName = conn.getMetaData().getDriverName();
+			System.out.println("driver name: " + driverName);
+			
+			String idIdentity;
+			
+			if (driverName.equals("HSQL Database Engine Driver")) {
+				idIdentity = "id INTEGER IDENTITY";
+			} else if (driverName.equals("org.mysql")) {
+				idIdentity = "id INTEGER AUTO_INCREMENT";
+			} else {
+				throw new FatalHelmException("driver " + driverName + "is unsupported", null);
+			}
+			
 			statement = conn.createStatement();
 			statement.executeUpdate(
 					"CREATE TABLE greylist (" +
-					/* "		id INTEGER " + /* AUTO_INCREMENT / "primary key," + */ 
+					idIdentity + "," +
+					/* "		" + */ 
 					"		sender VARCHAR(255), " +
 					"		recipient VARCHAR(255)," +
 					"		ip VARCHAR(15),	" +
 					"		last_seen DATETIME," +
 					"		first_seen DATETIME," +
-					"connection_count INTEGER);");
+					"       connection_count INTEGER," +
+					"       PRIMARY KEY(id));");
 			//statement.executeQuery();
 
 		} catch(SQLException e) {
