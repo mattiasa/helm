@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Logger;
 
 public class Greylist {
 
@@ -121,7 +122,7 @@ public class Greylist {
 			}
 			
 			if(rset.next()) { 
-				log.log("Got multiple entries for query " + data);
+				log.warn("Got multiple entries for query " + data);
 			}
 	            
 		} catch(SQLException e) {

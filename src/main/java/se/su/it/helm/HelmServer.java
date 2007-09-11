@@ -5,6 +5,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.log4j.Level;
 
 
 public class HelmServer implements Runnable {
@@ -34,8 +38,18 @@ public class HelmServer implements Runnable {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
 		isRunning = true;
-		log = new Logger();
+		log = Logger.getLogger(HelmServer.class.getName());
 		greylist = new Greylist(config, log);
+		
+		log.setLevel(Level.WARN);
+		String log4jFile = config.getString("logj4file");
+		if (log4jFile != null) {
+			PropertyConfigurator.configure(log4jFile);
+		} else {
+			BasicConfigurator.configure();
+		}
+		
+		
 		serverThread = new Thread(this);
 		serverThread.start();
 		version = "helm-0.0.1";
@@ -60,7 +74,7 @@ public class HelmServer implements Runnable {
 			h.start();
 		}
 		
-		log.log("Started main server acceptor");
+		log.warn("Started main server acceptor");
 		while(isRunning()) {
 			
 			log.debug("Waiting for connection");

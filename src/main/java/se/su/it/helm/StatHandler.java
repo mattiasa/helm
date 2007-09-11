@@ -1,5 +1,7 @@
 package se.su.it.helm;
 
+import org.apache.log4j.Logger;
+
 public class StatHandler extends Thread {
 
 	private HelmServer server;
@@ -15,7 +17,7 @@ public class StatHandler extends Thread {
 	
 	public void run(){
 		
-		log.log("Started stats thread.");
+		log.info("Started stats thread.");
 		
 		long lasttime=System.currentTimeMillis();
 		long curtime;

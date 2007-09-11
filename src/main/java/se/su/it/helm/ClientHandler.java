@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 class ClientHandler extends Thread {
 	private BufferedReader in;
@@ -100,8 +101,10 @@ class ClientHandler extends Thread {
 					data = readObject(in); 
 					if(data == null)
 						break;
-  		 		
-					log.debug("Read object:\n" + data);
+					
+					if (log.isDebugEnabled()) {
+						log.debug("Read object:\n" + data);
+					}
 					
 					if(greylist.check(data)) {
 						action="dunno";
@@ -109,7 +112,7 @@ class ClientHandler extends Thread {
 						action="defer_if_permit";
 					}
   		 		} catch (NonFatalHelmException e) {
-  		 			log.log("Caught non-fatal exception " + e.getString());
+  		 			log.warn("Caught non-fatal exception " + e.getString());
   		 			action = "dunno";
   		 		}
   		 		out.println("action=" + action);

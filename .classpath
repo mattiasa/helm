@@ -11,5 +11,6 @@
 	<classpathentry kind="lib" path="lib/java/commons-logging-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/java/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/java/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/java/log4j-1.2.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
