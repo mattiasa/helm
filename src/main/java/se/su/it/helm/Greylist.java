@@ -335,7 +335,7 @@ public class Greylist {
 		
 		long gcdays = config.getInt("gcdays");
 
-		long lastseen = System.currentTimeMillis() - 3600 * 24 * gcdays;
+		long lastseen = System.currentTimeMillis() - 1000 * 3600 * 24 * gcdays;
 		
 		try {
 			conn = db.getConnection();
