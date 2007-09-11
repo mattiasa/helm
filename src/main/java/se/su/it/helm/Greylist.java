@@ -302,7 +302,6 @@ public class Greylist {
 			statement.executeUpdate(
 					"CREATE TABLE greylist (" +
 					idIdentity + "," +
-					/* "		" + */ 
 					"		sender VARCHAR(255), " +
 					"		recipient VARCHAR(255)," +
 					"		ip VARCHAR(15),	" +
