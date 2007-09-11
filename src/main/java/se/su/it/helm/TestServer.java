@@ -67,13 +67,13 @@ public class TestServer {
 		System.out.println("connection test");
 		testMessage("sender=bar@su.se\n" + 
 					"recipient=foo@su.se\n" +	
-					"client_address=130.237.162.110",	
+					"client_address=130.237.162.1",	
 					"action=defer_if_permit");
 	}
 	
 	@Test (groups = {"connnection"})
 	public void connectionBlockTest() throws Exception {
-		System.out.println("connection test");
+		System.out.println("connection block test");
 		testMessage("sender=block-s@su.se\n" + 
 					"recipient=block-r@su.se\n" +	
 					"client_address=130.237.162.2",	
@@ -82,7 +82,7 @@ public class TestServer {
 
 	@Test (groups = {"connnection"})
 	public void connectionPassTest() throws Exception {
-		System.out.println("connection test");
+		System.out.println("connection pass test");
 		testMessage("sender=pass-s@su.se\n" + 
 					"recipient=pass-r@su.se\n" +	
 					"client_address=130.237.162.3",	
@@ -100,81 +100,99 @@ public class TestServer {
 
 	@Test (groups = {"connnection"})
 	public void connectionMultiConnTest() throws Exception {
-		System.out.println("connection test");
+		System.out.println("connection multi test");
 		testMessage("sender=pass2-s@su.se\n" + 
 					"recipient=pass2-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.4",	
 					"action=defer_if_permit");
 	
 		Thread.sleep(2000);
 
 		testMessage("sender=pass2-s@su.se\n" + 
 					"recipient=pass2-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.4",	
 					"action=defer_if_permit");
 
 		Thread.sleep(6000);
 		
 		testMessage("sender=pass2-s@su.se\n" + 
 					"recipient=pass2-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.4",	
 					"action=dunno");
 		
 	}
 
 	@Test (groups = {"connnection"})
 	public void connectionMultiSendTest() throws Exception {
-		System.out.println("connection test");
+		System.out.println("connection multi send test");
 		testMessage("sender=pass3-s@su.se\n" + 
 					"recipient=pass3-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.5",	
 					"action=defer_if_permit");
 	
 		Thread.sleep(6000);
 		
 		testMessage("sender=pass3-s@su.se\n" + 
 					"recipient=pass3-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.5",	
 					"action=dunno");
 
 		Thread.sleep(1000);
 	
 		testMessage("sender=pass3-s@su.se\n" + 
 					"recipient=pass3-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.5",	
 					"action=dunno");	
 		
 	}
 	
 	@Test (groups = {"connnection"})
 	public void connectionMultiSendDiffrentTest() throws Exception {
-		System.out.println("connection test");
+		System.out.println("connection send diffrent test");
 		testMessage("sender=pass4-s@su.se\n" + 
 					"recipient=pass4-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.6",	
 					"action=defer_if_permit");
 
 		Thread.sleep(6000);
 		
 		testMessage("sender=pass4-s@su.se\n" + 
 					"recipient=pass4-r@su.se\n" +	
-					"client_address=130.237.162.4",	
+					"client_address=130.237.162.7",	
 					"action=defer_if_permit");
 	
 		testMessage("sender=pass4-s@su.se\n" + 
 					"recipient=pass4-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.6",	
 					"action=dunno");
 
 		Thread.sleep(1000);
 	
 		testMessage("sender=pass3-s@su.se\n" + 
 					"recipient=pass3-r@su.se\n" +	
-					"client_address=130.237.162.3",	
+					"client_address=130.237.162.6",	
 					"action=dunno");	
 		
 	}
 	
+	@Test (groups = {"connnection"})
+	public void connectionAWL() throws Exception {
+		System.out.println("connection awl test");
+		testMessage("sender=pass5-s@su.se\n" + 
+					"recipient=pass5-r@su.se\n" +	
+					"client_address=130.237.162.8",	
+					"action=defer_if_permit");
+
+		Thread.sleep(6000);
+		
+		testMessage("sender=pass5-s@su.se\n" + 
+					"recipient=pass5-r@su.se\n" +	
+					"client_address=130.237.162.8",	
+					"action=dunno");
 	
-	
+		testMessage("sender=pass5-s2@su.se\n" + 
+					"recipient=pass5-r2@su.se\n" +	
+					"client_address=130.237.162.8",	
+					"action=dunno");
+	}
 }

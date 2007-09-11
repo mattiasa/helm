@@ -23,7 +23,7 @@ public class Greylist {
 		db = new Db(config.getString("jdbcDriver"), 
 					config.getString("jdbcUrl"),
 					log);
-		delay = config.getInt("delay");			
+		delay = config.getInt("delay") * 1000;			
 	}
 	
 	/**
@@ -178,7 +178,56 @@ public class Greylist {
 
 		
 	}
+	
+	/**
+	 * Check if there is an AWL (auto white list entry) for this SMTP connection data
+	 * in the graylist database.
+	 *  
+	 * @param data
+	 * @return true if there is an AWL entry
+	 * @throws NonFatalHelmException
+	 */
 
+	private boolean
+	checkAWL(ConnectionData data, long currentTime) throws NonFatalHelmException
+	{
+		
+		PreparedStatement statement;
+		boolean ret = false;
+		
+		Connection conn = null;
+		ResultSet rset = null;
+	        
+		try {
+	        	
+			log.debug("Getting db connection");
+			conn = db.getConnection();
+	        	
+			statement = conn.prepareStatement("SELECT id FROM greylist WHERE ip = ? and first_seen < ? and connection_count >= 1");
+			
+			statement.setString(1, data.getSenderIp());
+			statement.setTimestamp(2, new Timestamp(currentTime - delay));
+			
+			log.debug("Executing statement: " + statement);
+			rset = statement.executeQuery();
+			
+			/* found at least one entry */
+			if(rset.next()) {
+				ret = true;
+			}
+	            
+		} catch(SQLException e) {
+			e.printStackTrace();
+			throw new NonFatalHelmException("Got SQLException when looking up in database", e);
+		} 
+		finally { 
+			if(conn != null)
+				db.returnConnection(conn);
+		}
+
+		return ret;
+	}
+	
 	/**
 	 * Check if data is allowed to pass or not by looking it up in the
 	 * graylist database.
@@ -191,26 +240,30 @@ public class Greylist {
 	
 	public boolean check(ConnectionData data) throws NonFatalHelmException {
 				
-		GreylistData gl = getGreylistData(data);
+		GreylistData gl;
 		long currentTime = System.currentTimeMillis();
-				
+
+		gl = getGreylistData(data);
 		if(gl == null) {
 			addGreylistData(data);
-			return false;
-		}
-		
-		if(gl.getLast_seen().before(new Timestamp(currentTime - delay * 1000 ))) {
+		} else if(gl.getLast_seen().before(new Timestamp(currentTime - delay))) {
 			gl.setCount(gl.getCount()+1);
 			gl.setLast_seen(new Timestamp(currentTime));
 			updateGreylistData(gl);
 		}
 		
-		if (gl.getCount() >= 1 && 
-			gl.getFirst_seen().before(new Timestamp(currentTime - delay * 1000)))
-		{
+		/* does this entry pass by itself */
+		if (gl != null && gl.getCount() >= 1) {
 			log.debug("Found entry");
 			return true;
 		}
+		
+		/* ok, not passing by itself, lets try AWL */
+		if (checkAWL(data, currentTime)) {
+			log.debug("found AWL entry");
+			return true;
+		}
+		
 		log.debug("Not old enough entry found");
 
 		return false;
