@@ -15,7 +15,7 @@ public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
 	private Thread serverThread;
 	private boolean isRunning;
-	private String version;
+	private String version = "helm-0.0.1";
 	private Greylist greylist;
 	private Logger log;
 	private boolean stats=false;
@@ -49,11 +49,8 @@ public class HelmServer implements Runnable {
 			BasicConfigurator.configure();
 		}
 		
-		
 		serverThread = new Thread(this);
-		serverThread.start();
-		version = "helm-0.0.1";
-		
+		serverThread.start();		
 	}
 	public String getVersion() {
 		return version;
@@ -85,7 +82,7 @@ public class HelmServer implements Runnable {
 					log.debug("Got connection, spawning child");
 					cl.start();
 				} catch (FatalHelmException e) {
-					log.error("Got fatal error when spawning child");
+					log.error("Got fatal error when spawning child" + e);
 				}
 			} catch (IOException e) {
 				log.error("Failed to call serverSocket.accept()" + e);
@@ -103,7 +100,6 @@ public class HelmServer implements Runnable {
 					
 					Configuration cnf = new PropertiesConfiguration(args[0]);
 					
-	
 					new HelmServer(cnf);
 					break;
 				default:

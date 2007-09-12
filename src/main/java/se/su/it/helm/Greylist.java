@@ -43,7 +43,7 @@ public class Greylist {
 		    
 		try {
 	        	
-			log.debug("Getting db connection");
+			log.debug("Getting db connection for add");
 			conn = db.getConnection();
 	        	
 			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connection_count) " +
@@ -95,7 +95,7 @@ public class Greylist {
 	        
 		try {
 	        	
-			log.debug("Getting db connection");
+			log.debug("Getting db connection for get");
 			conn = db.getConnection();
 	        	
 			statement = conn.prepareStatement("SELECT id,ip,sender,recipient,first_seen,last_seen,connection_count FROM greylist where ip = ? and sender = ? and recipient = ?");
@@ -154,7 +154,7 @@ public class Greylist {
 
 		try {
 	        	
-			log.debug("Getting db connection");
+			log.debug("Getting db connection for update");
 			conn = db.getConnection();
 	        	
 			statement = conn.prepareStatement("UPDATE greylist set connection_count=?, last_seen=? where id = ?");
@@ -201,7 +201,7 @@ public class Greylist {
 	        
 		try {
 	        	
-			log.debug("Getting db connection");
+			log.debug("Getting db connection for check AWL");
 			conn = db.getConnection();
 	        	
 			statement = conn.prepareStatement("SELECT id FROM greylist WHERE ip = ? and first_seen < ? and connection_count >= 1");
@@ -284,6 +284,7 @@ public class Greylist {
 
 
 		try {
+			log.debug("Getting db connection for create");
 			conn = db.getConnection();
 
 			String driverName = conn.getMetaData().getDriverName();
@@ -338,6 +339,8 @@ public class Greylist {
 		long lastseen = System.currentTimeMillis() - 1000 * 3600 * 24 * gcdays;
 		
 		try {
+			log.debug("Getting db connection for gc");
+
 			conn = db.getConnection();
 			statement = conn.prepareStatement("DELETE FROM greylist WHERE last_seen <= ?");
 			statement.setTimestamp(1,new Timestamp(lastseen));
@@ -359,6 +362,8 @@ public class Greylist {
 		Connection conn = null;
 
 		try {
+			log.debug("Getting db connection for reset db");
+
 			conn = db.getConnection();
 
 			statement = conn.createStatement();

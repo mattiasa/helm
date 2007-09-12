@@ -51,10 +51,8 @@ class ClientHandler extends Thread {
 				msg = in.readLine();
 				
 				/* null means end of stream */
-				if(msg == null) {
-					log.debug("connection closed");
+				if(msg == null)
 					return null;
-				}
 			} 
 			catch (IOException ioe) {
 				throw new FatalHelmException("Got IOException from readline", ioe);
@@ -73,8 +71,6 @@ class ClientHandler extends Thread {
 			String value = msg.substring(index+1);
 		
 			map.put(var, value);
-			
-			// log.debug("Variable = " + var + " value = " + value);
 		}
 		
 		ret.setSenderAddress(map.get("sender"));
@@ -91,16 +87,18 @@ class ClientHandler extends Thread {
 	}
 	
 	public void run(){
-		ConnectionData data = new ConnectionData();
-		log.debug("  Started child");
+		ConnectionData data;
+		log.info("connection opened to client");
 		try {
 			while (server.isRunning()) {
 				String action;
   		 		
 				try {
 					data = readObject(in); 
-					if(data == null)
+					if(data == null) {
+						log.info("connection closed to client");
 						break;
+					}
 					
 					if (log.isDebugEnabled()) {
 						log.debug("Read object:\n" + data);
