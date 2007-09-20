@@ -56,6 +56,7 @@ public class HelmServer implements Runnable {
 		if (gcInterval == 0) {
 			gcInterval = 3600 * 12;
 		}
+		gcInterval *= 1000;
 		
 		serverThread = new Thread(this);
 		serverThread.start();		

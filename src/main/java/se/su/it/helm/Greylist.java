@@ -24,7 +24,10 @@ public class Greylist {
 		db = new Db(config.getString("jdbcDriver"), 
 					config.getString("jdbcUrl"),
 					log);
-		delay = config.getInt("delay") * 1000;			
+		delay = config.getInt("delay");
+		if (delay == 0)
+			delay = 60;
+		delay = delay * 1000;		
 	}
 	
 	/**

@@ -17,7 +17,7 @@ public class GarbageCollector extends Thread {
 
 		server.getLogger().info("Started garbage collector thread.");
 
-		long t = 600; /* 10 min */
+		long t = 600 * 1000; /* 10 min */
 
 		while (server.isRunning()) {
 			try {

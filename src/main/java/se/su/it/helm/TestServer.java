@@ -51,6 +51,9 @@ public class TestServer {
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
 		config.setProperty("delay", "5");
 		config.setProperty("serverport", "4712");
+		config.setProperty("gcInterval", "5");
+		config.setProperty("gcdays", "5");
+
 		
 		server = new HelmServer(config);
 		server.createDatabase();
