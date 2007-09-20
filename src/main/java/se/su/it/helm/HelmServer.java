@@ -13,12 +13,15 @@ import org.apache.log4j.Level;
 
 public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
-	private Thread serverThread;
 	private boolean isRunning;
 	private String version = "helm-0.0.1";
 	private Greylist greylist;
 	private Logger log;
 	private boolean stats=false;
+	private long gcInterval;
+	private Thread serverThread;
+	private Thread statHandler = null;
+	private Thread garbageCollector = null;
 	
 	private Configuration config ;
 	
@@ -49,6 +52,11 @@ public class HelmServer implements Runnable {
 			BasicConfigurator.configure();
 		}
 		
+		gcInterval = config.getInt("gcInterval") * 3600;
+		if (gcInterval == 0) {
+			gcInterval = 3600 * 12;
+		}
+		
 		serverThread = new Thread(this);
 		serverThread.start();		
 	}
@@ -67,9 +75,11 @@ public class HelmServer implements Runnable {
 	public void run() {
 		
 		if(stats) {
-			StatHandler h = new StatHandler(this, log);
-			h.start();
+			statHandler = new StatHandler(this, log);
+			statHandler.start();
 		}
+		garbageCollector = new GarbageCollector(this, this.gcInterval);
+		garbageCollector.start();
 		
 		log.warn("Started main server acceptor");
 		while(isRunning()) {
@@ -127,8 +137,17 @@ public class HelmServer implements Runnable {
 		return config;
 	}
 	
+	public Logger getLogger()
+	{
+		return log;
+	}
+	
 	public void createDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.createDatabase();
+	}
+	
+	public void garbageCollectDatabase() throws FatalHelmException, NonFatalHelmException {
+		greylist.garbageCollectDatabase();
 	}
 
 	public void resetDatabase() throws FatalHelmException, NonFatalHelmException {

@@ -27,7 +27,9 @@ public class StatHandler extends Thread {
 		while(server.isRunning()) {
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {}
+			} catch (InterruptedException e) {
+				continue;
+			}
 			
 			curtime = System.currentTimeMillis();
 			curreqs = server.getRequests();
