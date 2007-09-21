@@ -21,13 +21,11 @@ public class Greylist {
 		this.config = config;
 		this.log = log;
 		
-		db = new Db(config.getString("jdbcDriver"), 
+		db = new Db(config.getString("jdbcDriver", "com.mysql.jdbc.Driver"), 
 					config.getString("jdbcUrl"),
 					log);
-		delay = config.getInt("delay");
-		if (delay == 0)
-			delay = 60;
-		delay = delay * 1000;		
+		delay = config.getInt("delay", 20);
+		delay *= 60 * 1000;		
 	}
 	
 	/**
@@ -337,7 +335,7 @@ public class Greylist {
 		PreparedStatement statement;
 		Connection conn = null;
 		
-		long gcdays = config.getInt("gcdays");
+		long gcdays = config.getInt("gcdays", 5);
 
 		long lastseen = System.currentTimeMillis() - 1000 * 3600 * 24 * gcdays;
 		

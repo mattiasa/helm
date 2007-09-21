@@ -25,17 +25,15 @@ public class StatHandler extends Thread {
 		long lastreqs = server.getRequests();
 		
 		while(server.isRunning()) {
-			try {
-				Thread.sleep(1000);
-			} catch (InterruptedException e) {
-				continue;
-			}
 			
 			curtime = System.currentTimeMillis();
 			curreqs = server.getRequests();
 			
 			long deltatime = curtime-lasttime;
 			long deltareqs = curreqs-lastreqs;
+			
+			if (deltatime == 0)
+				deltatime = 1;
 
 			long freq = deltareqs/deltatime;
 
@@ -43,6 +41,14 @@ public class StatHandler extends Thread {
 			
 			lasttime = curtime;
 			lastreqs = curreqs;
+
+			synchronized(server) {
+				try {
+					server.wait(1000);
+				} catch (InterruptedException e) {
+					continue;
+				}
+			}
 		}
 	}
 }

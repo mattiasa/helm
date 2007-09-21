@@ -52,10 +52,7 @@ public class HelmServer implements Runnable {
 			BasicConfigurator.configure();
 		}
 		
-		gcInterval = config.getInt("gcInterval") * 3600;
-		if (gcInterval == 0) {
-			gcInterval = 3600 * 12;
-		}
+		gcInterval = config.getInt("gcInterval", 60);
 		gcInterval *= 1000;
 		
 		serverThread = new Thread(this);

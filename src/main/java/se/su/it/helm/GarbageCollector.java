@@ -1,7 +1,5 @@
 package se.su.it.helm;
 
-import org.apache.log4j.Logger;
-
 public class GarbageCollector extends Thread {
 
 	private HelmServer server;
@@ -19,12 +17,14 @@ public class GarbageCollector extends Thread {
 
 		long t = 600 * 1000; /* 10 min */
 
-		while (server.isRunning()) {
+		synchronized(server) {
 			try {
-				Thread.sleep(t);
-			} catch (InterruptedException e) {
-				continue;
+				server.wait(t);
+			} catch (InterruptedException e1) {
 			}
+		}
+		
+		while (server.isRunning()) {
 
 			server.getLogger().info("Running garbage collection");
 			try {
@@ -34,7 +34,13 @@ public class GarbageCollector extends Thread {
 			}
 			server.getLogger().info("Done running garbage collection");
 
-			t = sleeptime;
+
+			synchronized(server) {
+				try {
+					server.wait(sleeptime);
+				} catch (InterruptedException e) {
+				}
+			}
 		}
 	}
 
