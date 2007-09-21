@@ -51,8 +51,10 @@ class ClientHandler extends Thread {
 				msg = in.readLine();
 				
 				/* null means end of stream */
-				if(msg == null)
+				if(msg == null) {
+					log.info("Client closed connection");
 					return null;
+				}
 			} 
 			catch (IOException ioe) {
 				throw new FatalHelmException("Got IOException from readline", ioe);
@@ -105,8 +107,10 @@ class ClientHandler extends Thread {
 					}
 					
 					if(greylist.check(data)) {
+						log.info("Passed message " + data);
 						action="dunno";
 					} else {
+						log.info("Blocked message " + data);
 						action="defer_if_permit";
 					}
   		 		} catch (NonFatalHelmException e) {
