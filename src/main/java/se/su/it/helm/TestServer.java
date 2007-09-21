@@ -50,6 +50,7 @@ public class TestServer {
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
 		config.setProperty("serverport", "4712");
+		config.setProperty("delay", "5");
 
 		
 		server = new HelmServer(config);

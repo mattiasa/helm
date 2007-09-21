@@ -25,7 +25,7 @@ public class Greylist {
 					config.getString("jdbcUrl"),
 					log);
 		delay = config.getInt("delay", 20);
-		delay *= 60 * 1000;		
+		delay *= 1000;		
 	}
 	
 	/**
