@@ -289,7 +289,7 @@ public class Greylist {
 			conn = db.getConnection();
 
 			String driverName = conn.getMetaData().getDriverName();
-			System.out.println("driver name: " + driverName);
+			log.debug("driver name: " + driverName);
 			
 			String idIdentity;
 			
