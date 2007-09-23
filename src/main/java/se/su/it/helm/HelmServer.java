@@ -20,8 +20,7 @@ public class HelmServer implements Runnable {
 	private boolean stats=false;
 	private long gcInterval;
 	private Thread serverThread;
-	private Thread statHandler = null;
-	private Thread garbageCollector = null;
+	private int controllerPort;
 	
 	private Configuration config ;
 	
@@ -55,8 +54,10 @@ public class HelmServer implements Runnable {
 		gcInterval = config.getInt("gcInterval", 60);
 		gcInterval *= 1000;
 		
+		controllerPort = config.getInt("controllerPort", 4713);
+		
 		serverThread = new Thread(this);
-		serverThread.start();		
+		serverThread.start();
 	}
 	public String getVersion() {
 		return version;
@@ -67,17 +68,19 @@ public class HelmServer implements Runnable {
 	}
 	
 	public void stop() {
-		isRunning = true;
+		isRunning = false;
+		synchronized(this) {
+			this.notifyAll();
+		}
 	}
 
 	public void run() {
 		
 		if(stats) {
-			statHandler = new StatHandler(this, log);
-			statHandler.start();
+			new StatHandler(this, log);
 		}
-		garbageCollector = new GarbageCollector(this, this.gcInterval);
-		garbageCollector.start();
+		new GarbageCollector(this, gcInterval);
+		new HelmControllerServer(this, controllerPort);
 		
 		log.warn("Started main server acceptor");
 		while(isRunning()) {

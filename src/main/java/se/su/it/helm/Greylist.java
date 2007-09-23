@@ -345,7 +345,7 @@ public class Greylist {
 			conn = db.getConnection();
 			statement = conn.prepareStatement("DELETE FROM greylist WHERE last_seen <= ?");
 			statement.setTimestamp(1,new Timestamp(lastseen));
-			statement.executeQuery();
+			statement.executeUpdate();
 
 		} catch(SQLException e) {
 			e.printStackTrace();

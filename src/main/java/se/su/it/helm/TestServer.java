@@ -50,8 +50,8 @@ public class TestServer {
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
 		config.setProperty("serverport", "4712");
+		config.setProperty("controllerPort", "4713");
 		config.setProperty("delay", "5");
-
 		
 		server = new HelmServer(config);
 		server.createDatabase();
@@ -69,7 +69,7 @@ public class TestServer {
 		server.resetDatabase();
 	}
 	
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionTest() throws Exception {
 		System.out.println("connection test");
 		testMessage("sender=bar@su.se\n" + 
@@ -78,7 +78,7 @@ public class TestServer {
 					"action=defer_if_permit");
 	}
 	
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionBlockTest() throws Exception {
 		System.out.println("connection block test");
 		testMessage("sender=block-s@su.se\n" + 
@@ -87,7 +87,7 @@ public class TestServer {
 					"action=defer_if_permit");
 	}
 
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionPassTest() throws Exception {
 		System.out.println("connection pass test");
 		testMessage("sender=pass-s@su.se\n" + 
@@ -105,7 +105,7 @@ public class TestServer {
 		
 	}
 
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionMultiConnTest() throws Exception {
 		System.out.println("connection multi test");
 		testMessage("sender=pass2-s@su.se\n" + 
@@ -129,7 +129,7 @@ public class TestServer {
 		
 	}
 
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionMultiSendTest() throws Exception {
 		System.out.println("connection multi send test");
 		testMessage("sender=pass3-s@su.se\n" + 
@@ -153,7 +153,7 @@ public class TestServer {
 		
 	}
 	
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionMultiSendDiffrentTest() throws Exception {
 		System.out.println("connection send diffrent test");
 		testMessage("sender=pass4-s@su.se\n" + 
@@ -182,7 +182,7 @@ public class TestServer {
 		
 	}
 	
-	@Test (groups = {"connnection"})
+	@Test (groups = {"connection"})
 	public void connectionAWL() throws Exception {
 		System.out.println("connection awl test");
 		testMessage("sender=pass5-s@su.se\n" + 
@@ -202,4 +202,24 @@ public class TestServer {
 					"client_address=130.237.162.8",	
 					"action=dunno");
 	}
+	
+	@Test (groups = {"controller"})
+	public void controllerCheck() throws Exception {
+		HelmControllerClient client = new HelmControllerClient(4713);
+		
+		String s = client.checkServer();
+		if (!s.equals("Server running")) {
+		    throw new Exception("server not running ?");
+		}
+	}
+	@Test (groups = {"controller"})
+	public void controllerGC() throws Exception {
+		HelmControllerClient client = new HelmControllerClient(4713);
+		
+		String s = client.runGarbageCollector();
+		if (!s.equals("ok")) {
+		    throw new Exception("error while running gc?: " + s);
+		} 
+	}
+
 }

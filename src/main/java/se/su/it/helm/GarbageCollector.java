@@ -9,6 +9,9 @@ public class GarbageCollector extends Thread {
 
 		this.server = server;
 		this.sleeptime = sleeptime;
+		
+		Thread t = new Thread(this);
+		t.start();
 	}
 
 	public void run() {

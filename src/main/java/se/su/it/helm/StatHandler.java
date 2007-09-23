@@ -12,8 +12,9 @@ public class StatHandler extends Thread {
 		this.server = server;
 		this.log = log;
 		
+		Thread t = new Thread(this);
+		t.start();
 	}
-	
 	
 	public void run(){
 		
