@@ -12,9 +12,14 @@ import java.rmi.server.RMIServerSocketFactory;
 
 class ssf implements RMIServerSocketFactory {
 	ServerSocket s;
+	HelmServer server;
+
+	ssf(HelmServer server) {
+		this.server = server;
+	}
 	public ServerSocket createServerSocket(int port) throws IOException
 	{
-		s = new ServerSocket(port, 4, InetAddress.getByName("localhost"));
+		s = new ServerSocket(port, 4, InetAddress.getByName(server.getBindAddress()));
 		return s;
 	}
 	public int hashCode() {
@@ -42,16 +47,16 @@ class csf implements RMIClientSocketFactory {
 }
 
 public class HelmControllerRegistry {
-	static Registry createRegistry(int port) throws RemoteException
+	static Registry createRegistry(HelmServer server, int port) throws RemoteException
 	{
 		return LocateRegistry.createRegistry(port,
 				(RMIClientSocketFactory)new csf(),
-				(RMIServerSocketFactory)new ssf());
+				(RMIServerSocketFactory)new ssf(server));
 	}
 	
-	static Registry getRegistry(int port) throws RemoteException
+	static Registry getRegistry(String controllerAddr, int port) throws RemoteException
 	{
-		return LocateRegistry.getRegistry("localhost", port,
+		return LocateRegistry.getRegistry(controllerAddr, port,
 				(RMIClientSocketFactory)new csf());
 	}
 }

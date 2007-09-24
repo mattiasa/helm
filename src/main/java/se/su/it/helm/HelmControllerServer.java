@@ -43,7 +43,9 @@ public class HelmControllerServer extends Thread implements HelmController {
 			HelmController stub = 
 				(HelmController) UnicastRemoteObject.exportObject(this, 0);
 
-			Registry registry = HelmControllerRegistry.createRegistry(controllerPort);
+			Registry registry;
+			
+			registry = HelmControllerRegistry.createRegistry(server, controllerPort);
 			registry.bind("HelmController", stub);
 
 			server.getLogger().info("HelmControllerServer ready");

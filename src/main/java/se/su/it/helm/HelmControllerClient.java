@@ -4,13 +4,19 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
+import org.apache.commons.configuration.Configuration;
+
 public class HelmControllerClient {
-	HelmController controller;
-		
-	public HelmControllerClient(int port)
+	private HelmController controller;
+	private String controllerAddr;
+
+	
+	public HelmControllerClient(Configuration config, int port)
 		throws RemoteException, NotBoundException
 	{
-	    Registry registry = HelmControllerRegistry.getRegistry(port);
+		controllerAddr = config.getString("controllerAddress", "localhost");
+
+	    Registry registry = HelmControllerRegistry.getRegistry(controllerAddr, port);
 	    controller = (HelmController) registry.lookup("HelmController");
 	}
 	

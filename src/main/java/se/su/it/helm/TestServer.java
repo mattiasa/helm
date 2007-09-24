@@ -13,6 +13,7 @@ public class TestServer {
 	
 	int testServerPort = 4712;
 	HelmServer server;
+	BaseConfiguration config;
 	
 	private void
 	testMessage(String message, String expects)
@@ -45,7 +46,7 @@ public class TestServer {
 		System.out.println("setup db");
 		System.out.println("start helm");
 
-		BaseConfiguration config = new BaseConfiguration();
+		config = new BaseConfiguration();
 		
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
@@ -206,7 +207,7 @@ public class TestServer {
 	
 	@Test (groups = {"controller"})
 	public void controllerCheck() throws Exception {
-		HelmControllerClient client = new HelmControllerClient(4713);
+		HelmControllerClient client = new HelmControllerClient(config, 4713);
 		
 		String s = client.checkServer();
 		if (!s.equals("Server running")) {
@@ -215,7 +216,7 @@ public class TestServer {
 	}
 	@Test (groups = {"controller"})
 	public void controllerGC() throws Exception {
-		HelmControllerClient client = new HelmControllerClient(4713);
+		HelmControllerClient client = new HelmControllerClient(config, 4713);
 		
 		String s = client.runGarbageCollector();
 		if (!s.equals("ok")) {

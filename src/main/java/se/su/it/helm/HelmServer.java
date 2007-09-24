@@ -1,6 +1,7 @@
 package se.su.it.helm;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import org.apache.commons.configuration.Configuration;
@@ -22,6 +23,7 @@ public class HelmServer implements Runnable {
 	private long gcInterval;
 	private Thread serverThread;
 	private int controllerPort;
+	private String bindAddr;
 	
 	private Configuration config ;
 	
@@ -31,12 +33,15 @@ public class HelmServer implements Runnable {
 		
 		this.config = config;
 		
+		bindAddr = config.getString("bindAddress", "localhost");
+		
 		int serverport = config.getInt("serverport");
 		if(serverport < 1 || serverport > 65536)
 			throw new IllegalArgumentException();
 		
 		try {
-			serverSocket = new ServerSocket(serverport);
+			serverSocket = new ServerSocket(serverport, 10, 
+					InetAddress.getByName(bindAddr));
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
@@ -130,11 +135,11 @@ public class HelmServer implements Runnable {
 				HelmServer s = new HelmServer(cnf);
 				s.resetDatabase();
 			} else if (args[1].equals("gc")) {
-				HelmControllerClient client = new HelmControllerClient(4713);
+				HelmControllerClient client = new HelmControllerClient(cnf, 4713);
 				String r = client.runGarbageCollector();
 				System.out.println("gc: " + r);
 			} else if (args[1].equals("stop")) {
-				HelmControllerClient client = new HelmControllerClient(4713);
+				HelmControllerClient client = new HelmControllerClient(cnf, 4713);
 				String r = client.runGarbageCollector();
 				System.out.println("gc: " + r);
 			} else {
@@ -167,6 +172,11 @@ public class HelmServer implements Runnable {
 	public Logger getLogger()
 	{
 		return log;
+	}
+	
+	public String getBindAddress()
+	{
+		return bindAddr;
 	}
 	
 	public void createDatabase() throws FatalHelmException, NonFatalHelmException {
