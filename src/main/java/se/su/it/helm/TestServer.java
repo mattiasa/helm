@@ -50,7 +50,7 @@ public class TestServer {
 		
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
-		config.setProperty("serverport", "4712");
+		config.setProperty("serverPort", "4712");
 		config.setProperty("controllerPort", "4713");
 		config.setProperty("delay", "5");
 		
