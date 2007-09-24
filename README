@@ -6,8 +6,7 @@ Make sure you have Java and Maven2 installed.
 Call 'mvn install' to build target/helm-<version>.jar.
 
 ==Use
-Start HelmServer 'java -cp helm-<version>.jar se.su.it.helm.HelmServer <port>'.
+java -cp helm.jar conf.param create-database
+java -cp helm.jar conf.param start
 
-==Test
-Make sure you have jruby and rspec gem installed.
-Call 'jruby -S spec -fs helm_server_sepc.rb' to run the tests.
+See https://roundup.it.su.se/confluence/display/helm/ for more options.
