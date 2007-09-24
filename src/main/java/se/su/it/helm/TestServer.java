@@ -55,6 +55,7 @@ public class TestServer {
 		
 		server = new HelmServer(config);
 		server.createDatabase();
+		server.startService();
 		// setup server
 	}
 	

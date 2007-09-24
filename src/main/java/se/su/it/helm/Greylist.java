@@ -368,6 +368,7 @@ public class Greylist {
 			conn = db.getConnection();
 
 			statement = conn.createStatement();
+			// hsqldb doesn't support TRUNCATE TABLE, so use DELETE FROM
 			statement.executeUpdate("DELETE FROM greylist");
 		} catch(SQLException e) {
 			e.printStackTrace();

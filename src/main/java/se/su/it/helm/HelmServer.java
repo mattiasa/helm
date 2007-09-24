@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Level;
+import java.lang.Runtime;
 
 
 public class HelmServer implements Runnable {
@@ -39,7 +40,6 @@ public class HelmServer implements Runnable {
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
-		isRunning = true;
 		log = Logger.getLogger(HelmServer.class.getName());
 		greylist = new Greylist(config, log);
 		
@@ -57,7 +57,6 @@ public class HelmServer implements Runnable {
 		controllerPort = config.getInt("controllerPort", 4713);
 		
 		serverThread = new Thread(this);
-		serverThread.start();
 	}
 	public String getVersion() {
 		return version;
@@ -72,6 +71,11 @@ public class HelmServer implements Runnable {
 		synchronized(this) {
 			this.notifyAll();
 		}
+	}
+	
+	public void startService() {
+		isRunning = true;
+		serverThread.start();
 	}
 
 	public void run() {
@@ -98,24 +102,46 @@ public class HelmServer implements Runnable {
 			} catch (IOException e) {
 				log.error("Failed to call serverSocket.accept()" + e);
 			}
+			synchronized(this) {
 				try {
-				Thread.sleep(100);
-			} catch(InterruptedException ie){
+					this.wait(100);
+				} catch(InterruptedException ie){
+				}
 			}
 		}
 	}
 	public static void main(String[] args) {
+
 		try {
-			switch(args.length) {
-				case 1:
-					
-					Configuration cnf = new PropertiesConfiguration(args[0]);
-					
-					new HelmServer(cnf);
-					break;
-				default:
-					System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile>");
+			if (args.length != 2) {
+				System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile> [start|create-database]");
+				Runtime.getRuntime().exit(1);
 			}
+
+			Configuration cnf = new PropertiesConfiguration(args[0]);
+					
+			if (args[1].equals("start")) {
+				HelmServer s = new HelmServer(cnf);
+				s.startService();
+			} else if (args[1].equals("create-database")) {
+				HelmServer s = new HelmServer(cnf);
+				s.createDatabase();
+			} else if (args[1].equals("reset-database")) {
+				HelmServer s = new HelmServer(cnf);
+				s.resetDatabase();
+			} else if (args[1].equals("gc")) {
+				HelmControllerClient client = new HelmControllerClient(4713);
+				String r = client.runGarbageCollector();
+				System.out.println("gc: " + r);
+			} else if (args[1].equals("stop")) {
+				HelmControllerClient client = new HelmControllerClient(4713);
+				String r = client.runGarbageCollector();
+				System.out.println("gc: " + r);
+			} else {
+				System.err.println("unknown command: " + args[1]);
+				Runtime.getRuntime().exit(1);
+			}
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
