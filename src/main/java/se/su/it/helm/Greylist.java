@@ -307,7 +307,7 @@ public class Greylist {
 					idIdentity + "," +
 					"		sender VARCHAR(255), " +
 					"		recipient VARCHAR(255)," +
-					"		ip VARCHAR(15),	" +
+					"		ip VARCHAR(48),	" +
 					"		last_seen DATETIME," +
 					"		first_seen DATETIME," +
 					"       connection_count INTEGER," +
