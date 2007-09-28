@@ -28,10 +28,30 @@
           	    <mainClass>se.su.it.helm.HelmServer</mainClass>
           	    <packageName>se.su.it.helm</packageName>
           	    <addClasspath>true</addClasspath>
+		    <classpathPrefix>dependency</classpathPrefix>
           	  </manifest>
           	</archive>
           </configuration>
         </plugin>
+
+
+     <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
 	  </plugins>
     </pluginManagement>
   </build>
