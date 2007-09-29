@@ -53,10 +53,14 @@ public class TestServer {
 		config.setProperty("serverPort", "4712");
 		config.setProperty("controllerPort", "4713");
 		config.setProperty("delay", "5");
-		
+		try {
 		server = new HelmServer(config);
 		server.createDatabase();
 		server.startService();
+		} catch (HelmException e) {
+			System.err.println(e.getString());
+			throw e;
+		}
 		// setup server
 	}
 	

@@ -34,8 +34,8 @@ public class HelmException extends Exception {
 		ret += "Stack trace: \n";
 		ret += stackTracePrinter(this);
 		if(cause != null) {
-			ret += "caused by ";
-			stackTracePrinter(cause);
+			ret += "caused by \n";
+			ret += stackTracePrinter(cause);
 		}
 		return ret;
 	}

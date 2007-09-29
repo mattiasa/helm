@@ -3,10 +3,12 @@ Helm - a greylist protocol java server
 
 ==Build
 Make sure you have Java and Maven2 installed.
-Call 'mvn install' to build target/helm-<version>.jar.
+
+Call 'mvn assembly:assembly' to build a release jar file
+ target/helm-<version>-jar-with-dependencies.jar
 
 ==Use
-java -cp helm.jar conf.param create-database
-java -cp helm.jar conf.param start
+java -jar helm.jar conf.param create-database
+java -jar helm.jar conf.param start
 
 See https://roundup.it.su.se/confluence/display/helm/ for more options.

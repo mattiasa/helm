@@ -76,6 +76,11 @@ public class HelmServer implements Runnable {
 		synchronized(this) {
 			this.notifyAll();
 		}
+		try {
+			greylist.shutdown();
+		} catch (TerminatingHelmException e) {
+			log.error("shutdown error: " + e.getString());
+		}
 	}
 	
 	public void startService() {
@@ -149,7 +154,7 @@ public class HelmServer implements Runnable {
 		} catch (HelmException e) {
 			System.out.println(e.getString());
 		} catch(Exception e) {
-			
+			System.err.println("main exception: " + e);
 			e.printStackTrace();
 		}
 	}

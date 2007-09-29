@@ -101,6 +101,15 @@ public class Db {
         	throw new TerminatingHelmException("Could not initiate dbcp", e); 
         }
     }
+    
+    void shutdownDriver() throws TerminatingHelmException {
+        try {
+        	PoolingDriver driver = (PoolingDriver) DriverManager.getDriver("jdbc:apache:commons:dbcp:");
+        	driver.closePool("example");
+        } catch (SQLException e) {
+        	throw new TerminatingHelmException("Could not close pool", e);
+        }
+    }
 	
 	/*
 	

@@ -12,10 +12,10 @@ import org.apache.log4j.Logger;
 
 public class Greylist {
 
-	Db db;
-	Logger log;
-	Configuration config;
-	int delay;
+	private Db db;
+	private Logger log;
+	private Configuration config;
+	private int delay;
 	
 	public Greylist(Configuration config, Logger log) throws TerminatingHelmException {
 		this.config = config;
@@ -26,6 +26,10 @@ public class Greylist {
 					log);
 		delay = config.getInt("delay", 20);
 		delay *= 1000;		
+	}
+
+	void shutdown() throws TerminatingHelmException {
+		db.shutdownDriver();
 	}
 	
 	/**
@@ -289,21 +293,25 @@ public class Greylist {
 			conn = db.getConnection();
 
 			String driverName = conn.getMetaData().getDriverName();
-			log.debug("driver name: " + driverName);
+			log.error("driver name: " + driverName);
 			
 			String idIdentity;
+			String cached;
 			
 			if (driverName.equals("HSQL Database Engine Driver")) {
 				idIdentity = "id INTEGER IDENTITY";
+				cached = "CACHED ";
 			} else if (driverName.equals("MySQL-AB JDBC Driver")) {
 				idIdentity = "id INTEGER AUTO_INCREMENT";
+				cached = "";
 			} else {
 				throw new FatalHelmException("driver " + driverName + " is unsupported", null);
 			}
 			
 			statement = conn.createStatement();
+			statement.executeUpdate("DROP TABLE greylist;");
 			statement.executeUpdate(
-					"CREATE TABLE greylist (" +
+					"CREATE " + cached + "TABLE greylist (" +
 					idIdentity + "," +
 					"		sender VARCHAR(255), " +
 					"		recipient VARCHAR(255)," +
