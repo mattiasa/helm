@@ -26,4 +26,7 @@ public class HelmControllerClient {
 	public String runGarbageCollector() throws RemoteException {
 		return controller.runGarbageCollector();
 	}
+	public String stopServer() throws RemoteException {
+		return controller.stopServer();
+	}
 }

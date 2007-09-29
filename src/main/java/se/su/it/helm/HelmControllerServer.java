@@ -18,7 +18,9 @@ public class HelmControllerServer extends Thread implements HelmController {
 	}
 
 	public String stopServer() throws RemoteException {
-		return null;
+		String s = "ok";
+		server.stop();
+		return s;
 	}
 
 	public String checkServer() throws RemoteException {

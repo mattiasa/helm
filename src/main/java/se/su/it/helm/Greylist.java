@@ -309,7 +309,6 @@ public class Greylist {
 			}
 			
 			statement = conn.createStatement();
-			statement.executeUpdate("DROP TABLE greylist;");
 			statement.executeUpdate(
 					"CREATE " + cached + "TABLE greylist (" +
 					idIdentity + "," +
