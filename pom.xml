@@ -6,7 +6,6 @@
   <version>0.0.1</version>
   <build>
 	<defaultGoal>package</defaultGoal>
-    <pluginManagement>
       <plugins>
  		<plugin>
  	      <artifactId>maven-compiler-plugin</artifactId>
@@ -53,7 +52,6 @@
 
 
 	  </plugins>
-    </pluginManagement>
   </build>
   <dependencies>
     <dependency>
