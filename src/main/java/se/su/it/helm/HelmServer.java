@@ -145,8 +145,8 @@ public class HelmServer implements Runnable {
 				System.out.println("gc: " + r);
 			} else if (args[1].equals("stop")) {
 				HelmControllerClient client = new HelmControllerClient(cnf, 4713);
-				String r = client.();
-				System.out.println("gc: " + r);
+				String r = client.stopServer();
+				System.out.println("stop: " + r);
 			} else {
 				System.err.println("unknown command: " + args[1]);
 				Runtime.getRuntime().exit(1);
