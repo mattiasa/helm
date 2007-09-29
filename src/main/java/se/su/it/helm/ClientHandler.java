@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 class ClientHandler extends Thread {
@@ -91,6 +93,9 @@ class ClientHandler extends Thread {
 	public void run(){
 		ConnectionData data;
 		log.info("connection opened to client");
+		Configuration config = server.getConfig();
+		String blockMessage = config.getString("blockMessage", "Temporary failure");
+		
 		try {
 			while (server.isRunning()) {
 				String action;
@@ -111,7 +116,8 @@ class ClientHandler extends Thread {
 						action="dunno";
 					} else {
 						log.info("Blocked message " + data);
-						action="defer_if_permit";
+						
+						action="defer_if_permit " + blockMessage;
 					}
   		 		} catch (NonFatalHelmException e) {
   		 			log.warn("Caught non-fatal exception " + e.getString());
