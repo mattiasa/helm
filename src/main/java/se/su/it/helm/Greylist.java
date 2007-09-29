@@ -298,7 +298,7 @@ public class Greylist {
 			} else if (driverName.equals("MySQL-AB JDBC Driver")) {
 				idIdentity = "id INTEGER AUTO_INCREMENT";
 			} else {
-				throw new FatalHelmException("driver " + driverName + "is unsupported", null);
+				throw new FatalHelmException("driver " + driverName + " is unsupported", null);
 			}
 			
 			statement = conn.createStatement();
