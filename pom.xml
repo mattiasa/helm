@@ -19,6 +19,17 @@
 		  <artifactId>maven-surefire-plugin</artifactId>
         </plugin>
         <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+             <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <configuration>
@@ -32,25 +43,26 @@
           	</archive>
           </configuration>
         </plugin>
-
-
-     <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
+      
+        <plugin>
+         <artifactId>maven-assembly-plugin</artifactId>
+           <executions>
           <execution>
-            <id>copy-dependencies</id>
             <phase>package</phase>
             <goals>
-              <goal>copy-dependencies</goal>
+              <goal>assembly</goal>
             </goals>
-            <configuration>
-            </configuration>
+            
+            
+         <configuration>
+          <descriptor>configuration/assembly/dep.xml</descriptor>
+         </configuration>
           </execution>
         </executions>
-      </plugin>
-
-
+         
+       </plugin>
+ 
+ 
 	  </plugins>
   </build>
   <dependencies>
