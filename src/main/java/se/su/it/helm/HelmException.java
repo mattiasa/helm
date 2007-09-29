@@ -30,6 +30,7 @@ public class HelmException extends Exception {
 	public String getString() {
 		String ret = "";
 		ret += "Exception " + this.getClass().getName() + "\n";
+		ret += "Message: " + this.msg + "\n";
 		ret += "Stack trace: \n";
 		ret += stackTracePrinter(this);
 		if(cause != null) {
