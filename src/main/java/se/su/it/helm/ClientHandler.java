@@ -118,6 +118,7 @@ class ClientHandler extends Thread {
   		 			action = "dunno";
   		 		}
   		 		out.println("action=" + action);
+  		 		out.println();
 			}
 		} catch (FatalHelmException e) {
 			log.error("Caught FatalHelmException. Terminating thread: " + e.getString());
