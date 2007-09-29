@@ -146,8 +146,10 @@ public class HelmServer implements Runnable {
 				System.err.println("unknown command: " + args[1]);
 				Runtime.getRuntime().exit(1);
 			}
-
+		} catch (HelmException e) {
+			System.out.println(e.getString());
 		} catch(Exception e) {
+			
 			e.printStackTrace();
 		}
 	}
