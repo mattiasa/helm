@@ -295,7 +295,7 @@ public class Greylist {
 			
 			if (driverName.equals("HSQL Database Engine Driver")) {
 				idIdentity = "id INTEGER IDENTITY";
-			} else if (driverName.equals("org.mysql")) {
+			} else if (driverName.equals("MySQL-AB JDBC Driver")) {
 				idIdentity = "id INTEGER AUTO_INCREMENT";
 			} else {
 				throw new FatalHelmException("driver " + driverName + "is unsupported", null);
