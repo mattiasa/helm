@@ -33,7 +33,7 @@ public class TestServer {
  	    	throw new Exception("server disconnected on us");
  	    }
 	    
-	    if (!msg.equals(expects)) {
+	    if (!msg.startsWith(expects)) {
 	    	throw new Exception("expected data not returned: " + msg);
 	    }
 	    out.close();

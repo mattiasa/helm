@@ -244,7 +244,7 @@ public class Greylist {
 	 */
 	
 	
-	public boolean check(ConnectionData data) throws NonFatalHelmException {
+	public GreylistResult check(ConnectionData data) throws NonFatalHelmException {
 				
 		GreylistData gl;
 		long currentTime = System.currentTimeMillis();
@@ -261,18 +261,21 @@ public class Greylist {
 		/* does this entry pass by itself */
 		if (gl != null && gl.getCount() >= 1) {
 			log.debug("Found entry");
-			return true;
+			return new GreylistResult(true);
 		}
 		
 		/* ok, not passing by itself, lets try AWL */
 		if (checkAWL(data, currentTime)) {
 			log.debug("found AWL entry");
-			return true;
+			return new GreylistResult(true);
 		}
 		
 		log.debug("Not old enough entry found");
 
-		return false;
+		GreylistResult res = new GreylistResult(false);
+		// make better check
+		res.setMessage("Will un-greylist in " + delay + " seconds.");
+		return res;
 	}
 	
 	/**

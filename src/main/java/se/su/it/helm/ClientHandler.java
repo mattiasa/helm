@@ -94,7 +94,7 @@ class ClientHandler extends Thread {
 		ConnectionData data;
 		log.info("connection opened to client");
 		Configuration config = server.getConfig();
-		String blockMessage = config.getString("blockMessage", "Temporary failure");
+		String defaultBlockMessage = config.getString("blockMessage", "Temporary failure");
 		
 		try {
 			while (server.isRunning()) {
@@ -111,13 +111,15 @@ class ClientHandler extends Thread {
 						log.debug("Read object:\n" + data);
 					}
 					
-					if(greylist.check(data)) {
+					GreylistResult res = greylist.check(data);
+					
+					if (res.passmail()) {
 						log.info("Passed message " + data);
 						action="dunno";
 					} else {
 						log.info("Blocked message " + data);
 						
-						action="defer_if_permit " + blockMessage;
+						action="defer_if_permit " + res.getMessage();
 					}
   		 		} catch (NonFatalHelmException e) {
   		 			log.warn("Caught non-fatal exception " + e.getString());
