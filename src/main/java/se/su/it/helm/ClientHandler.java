@@ -93,8 +93,6 @@ class ClientHandler extends Thread {
 	public void run(){
 		ConnectionData data;
 		log.info("connection opened to client");
-		Configuration config = server.getConfig();
-		String defaultBlockMessage = config.getString("blockMessage", "Temporary failure");
 		
 		try {
 			while (server.isRunning()) {
