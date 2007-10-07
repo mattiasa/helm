@@ -7,25 +7,29 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 public class Greylist {
 
 	private Db db;
 	private Logger log;
-	private Configuration config;
+	private HelmServer server;
 	private int delay;
+	private long gcdays;
+
 	
-	public Greylist(Configuration config, Logger log) throws TerminatingHelmException {
-		this.config = config;
+	public Greylist(HelmServer server, Logger log) throws TerminatingHelmException {
 		this.log = log;
 		
-		db = new Db(config.getString("jdbcDriver", "com.mysql.jdbc.Driver"), 
-					config.getString("jdbcUrl"),
+		db = new Db(server.getConfig().getString("jdbcDriver", "com.mysql.jdbc.Driver"), 
+					server.getConfig().getString("jdbcUrl"),
 					log);
-		delay = config.getInt("delay", 20);
-		delay *= 1000;		
+		delay = server.getConfig().getInt("delay", 20);
+		delay *= 1000;
+
+		gcdays = server.getConfig().getInt("gcdays", 5);
+
+		this.server = server;
 	}
 
 	void shutdown() throws TerminatingHelmException {
@@ -252,20 +256,24 @@ public class Greylist {
 		gl = getGreylistData(data);
 		if(gl == null) {
 			addGreylistData(data);
+			server.addFirstInsert();
 		} else if(gl.getLast_seen().before(new Timestamp(currentTime - delay))) {
 			gl.setCount(gl.getCount()+1);
 			gl.setLast_seen(new Timestamp(currentTime));
 			updateGreylistData(gl);
+			server.addUpdate();
 		}
 		
 		/* does this entry pass by itself */
 		if (gl != null && gl.getCount() >= 1) {
 			log.debug("Found entry");
+			server.addadmittedMatch();
 			return new GreylistResult(true);
 		}
 		
 		/* ok, not passing by itself, lets try AWL */
 		if (checkAWL(data, currentTime)) {
+			server.addadmittedAWL();
 			log.debug("found AWL entry");
 			return new GreylistResult(true);
 		}
@@ -273,7 +281,7 @@ public class Greylist {
 		log.debug("Not old enough entry found");
 
 		GreylistResult res = new GreylistResult(false);
-		// make better check
+		server.addfirstReject();
 		res.setMessage("Will un-greylist in " + delay + " seconds.");
 		return res;
 	}
@@ -296,7 +304,7 @@ public class Greylist {
 			conn = db.getConnection();
 
 			String driverName = conn.getMetaData().getDriverName();
-			log.error("driver name: " + driverName);
+			log.info("driver name: " + driverName);
 			
 			String idIdentity;
 			String cached;
@@ -345,8 +353,6 @@ public class Greylist {
 		PreparedStatement statement;
 		Connection conn = null;
 		
-		long gcdays = config.getInt("gcdays", 5);
-
 		long lastseen = System.currentTimeMillis() - 1000 * 3600 * 24 * gcdays;
 		
 		try {

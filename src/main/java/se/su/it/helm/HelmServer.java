@@ -27,7 +27,15 @@ public class HelmServer implements Runnable {
 	
 	private Configuration config ;
 	
+	/* statistics */
 	protected Long requests = new Long(0);
+	protected Long clients = new Long(0);
+	protected Long firstInsert = new Long(0);
+	protected Long admittedMatch = new Long(0);
+	protected Long admittedAWL = new Long(0);
+	protected Long firstReject = new Long(0);
+	protected Long update = new Long(0);
+
 
 	public HelmServer(Configuration config) throws TerminatingHelmException {
 		
@@ -46,7 +54,7 @@ public class HelmServer implements Runnable {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
 		log = Logger.getLogger(HelmServer.class.getName());
-		greylist = new Greylist(config, log);
+		greylist = new Greylist(this, log);
 		
 		log.setLevel(Level.WARN);
 		String log4jFile = config.getString("logj4file");
@@ -158,19 +166,81 @@ public class HelmServer implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	public long getRequests() {
-		long ret;
+	public Long getRequests() {
 		synchronized (requests) {
-			ret = requests.longValue();
+			return requests;
 		}
-		return ret;
 	}
 	public void addRequest() {
 		synchronized (requests) {
 			requests++;
 		}
 	}
-	
+	public Long getClients() {
+		synchronized (clients) {
+			return clients;
+		}
+	}
+	public void addClient() {
+		synchronized (clients) {
+			clients++;
+		}
+	}
+	public void delClient() {
+		this.clients++;
+	}
+
+	public Long getFirstInsert() {
+		synchronized (firstInsert) {
+			return firstInsert;
+		}
+	}
+	public synchronized void addFirstInsert() {
+		synchronized (firstInsert) {
+			firstInsert++;
+		}
+	}
+	public Long getadmittedMatch() {
+		synchronized (admittedMatch) {
+			return admittedMatch;
+		}
+	}
+	public synchronized void addadmittedMatch() {
+		synchronized (admittedMatch) {
+			admittedMatch++;
+		}
+	}
+	public Long getadmittedAWL() {
+		synchronized (admittedAWL) {
+			return admittedAWL;
+		}
+	}
+	public synchronized void addadmittedAWL() {
+		synchronized (admittedAWL) {
+			admittedAWL++;
+		}
+	}
+	public Long getfirstReject() {
+		synchronized (firstReject) {
+			return firstReject;
+		}
+	}
+	public synchronized void addfirstReject() {
+		synchronized (firstReject) {
+			firstReject++;
+		}
+	}
+	public Long getUpdate() {
+		synchronized (update) {
+			return update;
+		}
+	}
+	public synchronized void addUpdate() {
+		synchronized (update) {
+			update++;
+		}
+	}
+
 	public Configuration getConfig() 
 	{
 		return config;

@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 class ClientHandler extends Thread {
@@ -95,6 +94,9 @@ class ClientHandler extends Thread {
 		log.info("connection opened to client");
 		
 		try {
+			
+			server.addClient();
+			
 			while (server.isRunning()) {
 				String action;
   		 		
@@ -140,7 +142,8 @@ class ClientHandler extends Thread {
 				if(socket != null)
 					socket.close();
 			} catch(IOException e) { } 
-			
+
+			server.delClient();
 		}
 	}
 }
