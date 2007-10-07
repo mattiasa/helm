@@ -19,7 +19,7 @@ import java.lang.Runtime;
 public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
 	private boolean isRunning;
-	private String version = "helm-0.0.1";
+	private String version = "helm-0.0.2";
 	private Greylist greylist;
 	private Logger log;
 	private boolean stats=false;
