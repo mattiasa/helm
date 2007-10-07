@@ -58,6 +58,7 @@ class ClientHandler extends Thread {
 				}
 			} 
 			catch (IOException ioe) {
+				// should be client closed connection ?
 				throw new FatalHelmException("Got IOException from readline", ioe);
 			}
 			
@@ -107,6 +108,8 @@ class ClientHandler extends Thread {
 						break;
 					}
 					
+					server.addRequest();
+					
 					if (log.isDebugEnabled()) {
 						log.debug("Read object:\n" + data);
 					}
@@ -117,8 +120,7 @@ class ClientHandler extends Thread {
 						log.info("Passed message " + data);
 						action="dunno";
 					} else {
-						log.info("Blocked message " + data);
-						
+						log.info("Blocked message " + data);						
 						action="defer_if_permit " + res.getMessage();
 					}
   		 		} catch (NonFatalHelmException e) {

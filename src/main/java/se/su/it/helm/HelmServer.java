@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.rmi.RemoteException;
+import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.log4j.Logger;
@@ -23,18 +26,19 @@ public class HelmServer implements Runnable {
 	private long gcInterval;
 	private Thread serverThread;
 	private int controllerPort;
+	private int serverPort;
 	private String bindAddr;
 	
 	private Configuration config ;
 	
 	/* statistics */
-	protected Long requests = new Long(0);
-	protected Long clients = new Long(0);
-	protected Long firstInsert = new Long(0);
-	protected Long admittedMatch = new Long(0);
-	protected Long admittedAWL = new Long(0);
-	protected Long firstReject = new Long(0);
-	protected Long update = new Long(0);
+	private Long requests = new Long(0);
+	private Long clients = new Long(0);
+	private Long firstInsert = new Long(0);
+	private Long admittedMatch = new Long(0);
+	private Long admittedAWL = new Long(0);
+	private Long firstReject = new Long(0);
+	private Long update = new Long(0);
 
 
 	public HelmServer(Configuration config) throws TerminatingHelmException {
@@ -43,12 +47,12 @@ public class HelmServer implements Runnable {
 		
 		bindAddr = config.getString("bindAddress", "localhost");
 		
-		int serverport = config.getInt("serverPort");
-		if(serverport < 1 || serverport > 65536)
+		serverPort = config.getInt("serverPort");
+		if(serverPort < 1 || serverPort > 65536)
 			throw new IllegalArgumentException();
 		
 		try {
-			serverSocket = new ServerSocket(serverport, 10, 
+			serverSocket = new ServerSocket(serverPort, 10, 
 					InetAddress.getByName(bindAddr));
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
@@ -102,7 +106,11 @@ public class HelmServer implements Runnable {
 			new StatHandler(this, log);
 		}
 		new GarbageCollector(this, gcInterval);
-		new HelmControllerServer(this, controllerPort);
+		try {
+			new ControllerServer(this, controllerPort);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
 		
 		log.warn("Started main server acceptor");
 		while(isRunning()) {
@@ -148,13 +156,21 @@ public class HelmServer implements Runnable {
 				HelmServer s = new HelmServer(cnf);
 				s.resetDatabase();
 			} else if (args[1].equals("gc")) {
-				HelmControllerClient client = new HelmControllerClient(cnf, 4713);
+				ControllerClient client = new ControllerClient(cnf, 4713);
 				String r = client.runGarbageCollector();
 				System.out.println("gc: " + r);
 			} else if (args[1].equals("stop")) {
-				HelmControllerClient client = new HelmControllerClient(cnf, 4713);
+				ControllerClient client = new ControllerClient(cnf, 4713);
 				String r = client.stopServer();
 				System.out.println("stop: " + r);
+			} else if (args[1].equals("statistics")) {
+				ControllerClient client = new ControllerClient(cnf, 4713);
+				
+				List<ControllerStatistic> stats= client.getStatistics();
+				
+				for (ControllerStatistic o : stats) {
+					System.out.println(o.getType() + "/" + o.getName() + ": " + o.getValue());
+				}
 			} else {
 				System.err.println("unknown command: " + args[1]);
 				Runtime.getRuntime().exit(1);
@@ -187,7 +203,9 @@ public class HelmServer implements Runnable {
 		}
 	}
 	public void delClient() {
-		this.clients++;
+		synchronized (clients) {
+			clients--;
+		}
 	}
 
 	public Long getFirstInsert() {
@@ -267,6 +285,4 @@ public class HelmServer implements Runnable {
 	public void resetDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.resetDatabase();
 	}
-
-	
 }

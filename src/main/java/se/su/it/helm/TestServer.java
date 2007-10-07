@@ -2,7 +2,7 @@ package se.su.it.helm;
 
 import java.io.*;
 import java.net.*;
-
+import java.util.List;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
@@ -11,7 +11,8 @@ import org.testng.annotations.AfterClass;
 
 public class TestServer {
 	
-	int testServerPort = 4712;
+	Integer serverPort = 4712;
+	Integer controllerPort = 4713;
 	HelmServer server;
 	BaseConfiguration config;
 	
@@ -21,7 +22,7 @@ public class TestServer {
 	{
 		Socket socket;
 		
-		socket = new Socket("localhost", testServerPort);
+		socket = new Socket("localhost", serverPort);
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 	    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
@@ -50,8 +51,8 @@ public class TestServer {
 		
 		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
 		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
-		config.setProperty("serverPort", "4712");
-		config.setProperty("controllerPort", "4713");
+		config.setProperty("serverPort", serverPort.toString());
+		config.setProperty("controllerPort", controllerPort.toString());
 		config.setProperty("delay", "5");
 		try {
 		server = new HelmServer(config);
@@ -211,7 +212,7 @@ public class TestServer {
 	
 	@Test (groups = {"controller"})
 	public void controllerCheck() throws Exception {
-		HelmControllerClient client = new HelmControllerClient(config, 4713);
+		ControllerClient client = new ControllerClient(config, controllerPort);
 		
 		String s = client.checkServer();
 		if (!s.equals("Server running")) {
@@ -220,12 +221,25 @@ public class TestServer {
 	}
 	@Test (groups = {"controller"})
 	public void controllerGC() throws Exception {
-		HelmControllerClient client = new HelmControllerClient(config, 4713);
+		ControllerClient client = new ControllerClient(config, controllerPort);
 		
 		String s = client.runGarbageCollector();
 		if (!s.equals("ok")) {
 		    throw new Exception("error while running gc?: " + s);
 		} 
 	}
+	
+	@Test (groups = {"controller"})
+	public void getStatitics() throws Exception {
+		ControllerClient client = new ControllerClient(config, controllerPort);
+		
+		List<ControllerStatistic> stats = client.getStatistics();
+		
+		for (ControllerStatistic o : stats) {
+			System.err.println(o.getType() + "/" + o.getName() + ": " + o.getValue());
+		}
+		
+	}
+
 
 }

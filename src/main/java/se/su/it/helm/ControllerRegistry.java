@@ -46,7 +46,7 @@ class csf implements RMIClientSocketFactory {
 	}
 }
 
-public class HelmControllerRegistry {
+public class ControllerRegistry {
 	static Registry createRegistry(HelmServer server, int port) throws RemoteException
 	{
 		return LocateRegistry.createRegistry(port,
