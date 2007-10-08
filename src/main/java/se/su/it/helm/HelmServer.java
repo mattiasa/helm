@@ -58,9 +58,10 @@ public class HelmServer implements Runnable {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
 		log = Logger.getLogger(HelmServer.class.getName());
+		log.setLevel(Level.WARN);
+
 		greylist = new Greylist(this, log);
 		
-		log.setLevel(Level.WARN);
 		String log4jFile = config.getString("logj4file");
 		if (log4jFile != null) {
 			PropertyConfigurator.configure(log4jFile);

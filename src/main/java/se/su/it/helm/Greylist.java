@@ -18,10 +18,13 @@ public class Greylist {
 	private long gcdays;
 
 	
-	public Greylist(HelmServer server, Logger log) throws TerminatingHelmException {
+	public Greylist(HelmServer server, Logger log)
+		throws TerminatingHelmException
+	{
 		this.log = log;
 		
-		db = new Db(server.getConfig().getString("jdbcDriver", "com.mysql.jdbc.Driver"), 
+		db = new Db(server.getConfig().getString("jdbcDriver",
+												 "com.mysql.jdbc.Driver"), 
 					server.getConfig().getString("jdbcUrl"),
 					log);
 		delay = server.getConfig().getInt("delay", 20);
@@ -266,7 +269,7 @@ public class Greylist {
 		
 		/* does this entry pass by itself */
 		if (gl != null && gl.getCount() >= 1) {
-			log.debug("Found entry");
+			log.warn("helm pass queue_id " + data.getQueueID());
 			server.addadmittedMatch();
 			return new GreylistResult(true);
 		}
@@ -274,11 +277,11 @@ public class Greylist {
 		/* ok, not passing by itself, lets try AWL */
 		if (checkAWL(data, currentTime)) {
 			server.addadmittedAWL();
-			log.debug("found AWL entry");
+			log.warn("helm awl queue_id " + data.getQueueID());
 			return new GreylistResult(true);
 		}
 		
-		log.debug("Not old enough entry found");
+		log.warn("helm blocked queue_id " + data.getQueueID());
 
 		GreylistResult res = new GreylistResult(false);
 		server.addfirstReject();

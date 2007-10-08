@@ -80,6 +80,7 @@ class ClientHandler extends Thread {
 		ret.setSenderAddress(map.get("sender"));
 		ret.setRecipientAddress(map.get("recipient"));
 		ret.setSenderIp(map.get("client_address"));
+		ret.setQueueID(map.get("queue_id"));
 		
 		if(ret.getRecipientAddress() != null &&
 				ret.getSenderAddress() != null &&

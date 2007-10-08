@@ -27,6 +27,7 @@ public class TestServer {
 	    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
 	    out.println(message);
+	    out.println("queue_id=QUEUEID");
 	    out.println("");
 	    String msg = in.readLine();
 	    

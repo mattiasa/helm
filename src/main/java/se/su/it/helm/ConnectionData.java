@@ -12,6 +12,7 @@ public class ConnectionData {
 	private String senderAddress;
 	private String recipientAddress;
 	private Date creationTime = new Date();
+	private String queueID;
 	
 	public String getRecipientAddress() {
 		return recipientAddress;
@@ -31,7 +32,12 @@ public class ConnectionData {
 	public void setSenderIp(String senderIp) {
 		this.senderIp = senderIp;
 	}
-
+	public String getQueueID() {
+		return queueID;
+	}
+	public void setQueueID(String queueID) {
+		this.queueID = queueID;
+	}
 	@Test (groups = {"test1"})
 	public void testSenderIp() {
 		String ip = "10.47.11.17";
