@@ -269,7 +269,9 @@ public class Greylist {
 		
 		/* does this entry pass by itself */
 		if (gl != null && gl.getCount() >= 1) {
-			log.warn("helm pass queue_id " + data.getQueueID());
+			log.warn("helm pass from=<" + data.getSenderAddress() + 
+					"> to=<" + data.getRecipientAddress() + 
+					"> ip=" + data.getSenderIp());
 			server.addadmittedMatch();
 			return new GreylistResult(true);
 		}
@@ -277,15 +279,19 @@ public class Greylist {
 		/* ok, not passing by itself, lets try AWL */
 		if (checkAWL(data, currentTime)) {
 			server.addadmittedAWL();
-			log.warn("helm awl queue_id " + data.getQueueID());
+			log.warn("helm awl from=<" + data.getSenderAddress() + 
+					"> to=<" + data.getRecipientAddress() + 
+					"> ip=" + data.getSenderIp());
 			return new GreylistResult(true);
 		}
 		
-		log.warn("helm blocked queue_id " + data.getQueueID());
+		log.warn("helm blocked from=<" + data.getSenderAddress() + 
+				"> to=<" + data.getRecipientAddress() + 
+				"> ip=" + data.getSenderIp() + " delay remaining=" + delay/1000);
 
 		GreylistResult res = new GreylistResult(false);
 		server.addfirstReject();
-		res.setMessage("Will un-greylist in " + delay + " seconds.");
+		res.setMessage("Will un-greylist in " + delay/1000 + " seconds.");
 		return res;
 	}
 	
