@@ -5,20 +5,20 @@
   <artifactId>helm</artifactId>
   <version>0.0.2</version>
   <build>
-	<defaultGoal>package</defaultGoal>
-      <plugins>
- 		<plugin>
- 	      <artifactId>maven-compiler-plugin</artifactId>
-		  <configuration>
-			<source>1.5</source>
-			<target>1.5</target>
-		  </configuration>
-		</plugin>
-		<plugin>
- 	      <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-surefire-plugin</artifactId>
-        </plugin>
-        <plugin>
+    <defaultGoal>package</defaultGoal>
+    <plugins>
+      <plugin>
+ 	<artifactId>maven-compiler-plugin</artifactId>
+	<configuration>
+	  <source>1.5</source>
+	  <target>1.5</target>
+	</configuration>
+      </plugin>
+      <plugin>
+ 	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+      </plugin>
+      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -76,6 +76,9 @@
       <artifactId>log4j</artifactId>
       <version>1.2.9</version>
     </dependency>
+
+
+
     <dependency>
   	  <groupId>org.testng</groupId>
   	  <artifactId>testng</artifactId>
