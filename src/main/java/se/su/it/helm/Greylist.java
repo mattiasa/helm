@@ -255,15 +255,22 @@ public class Greylist {
 				
 		GreylistData gl;
 		long currentTime = System.currentTimeMillis();
+		long timeLeft;
 
 		gl = getGreylistData(data);
 		if(gl == null) {
 			addGreylistData(data);
+			timeLeft = delay;
 			server.addFirstInsert();
-		} else if(gl.getLast_seen().before(new Timestamp(currentTime - delay))) {
-			gl.setCount(gl.getCount()+1);
-			gl.setLast_seen(new Timestamp(currentTime));
-			updateGreylistData(gl);
+		} else {
+			timeLeft = delay - (currentTime - gl.getFirst_seen().getTime());
+			/* If more than delay has passed since First_seen, pass message */
+			if(timeLeft < 0) {
+				gl.setCount(gl.getCount()+1);
+				gl.setLast_seen(new Timestamp(currentTime));
+				updateGreylistData(gl);
+			}
+			
 			server.addUpdate();
 		}
 		
@@ -287,11 +294,11 @@ public class Greylist {
 		
 		log.warn("helm blocked from=<" + data.getSenderAddress() + 
 				"> to=<" + data.getRecipientAddress() + 
-				"> ip=" + data.getSenderIp() + " delay remaining=" + delay/1000);
+				"> ip=" + data.getSenderIp() + " delay remaining=" + timeLeft/1000);
 
-		GreylistResult res = new GreylistResult(false);
+
+		GreylistResult res = new GreylistResult(false, "Greylisted. Will remove block in " + timeLeft/1000 + " seconds.");
 		server.addfirstReject();
-		res.setMessage("Will un-greylist in " + delay/1000 + " seconds.");
 		return res;
 	}
 	
