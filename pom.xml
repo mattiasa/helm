@@ -29,24 +29,24 @@
           </execution>
         </executions>
       </plugin>
-             <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <configuration>
-          	<archive>
-          	  <manifest>
-          	    <mainClass>se.su.it.helm.HelmServer</mainClass>
-          	    <packageName>se.su.it.helm</packageName>
-          	    <addClasspath>true</addClasspath>
-		    <classpathPrefix>dependency</classpathPrefix>
-          	  </manifest>
-          	</archive>
-          </configuration>
-        </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>se.su.it.helm.HelmServer</mainClass>
+              <packageName>se.su.it.helm</packageName>
+              <addClasspath>true</addClasspath>
+	      <classpathPrefix>dependency</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
       
-        <plugin>
-         <artifactId>maven-assembly-plugin</artifactId>
-           <executions>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
           <execution>
             <phase>package</phase>
             <goals>
@@ -54,16 +54,16 @@
             </goals>
             
             
-         <configuration>
-          <descriptor>configuration/assembly/dep.xml</descriptor>
-         </configuration>
+            <configuration>
+              <descriptor>configuration/assembly/dep.xml</descriptor>
+            </configuration>
           </execution>
         </executions>
-         
-       </plugin>
- 
- 
-	  </plugins>
+        
+      </plugin>
+      
+      
+    </plugins>
   </build>
   <dependencies>
     <dependency>
@@ -80,8 +80,8 @@
 
 
     <dependency>
-  	  <groupId>org.testng</groupId>
-  	  <artifactId>testng</artifactId>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
       <version>5.5</version>
       <classifier>jdk15</classifier>
     </dependency>
