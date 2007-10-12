@@ -48,7 +48,7 @@ public class HelmServer implements Runnable {
 		bindAddr = config.getString("bindAddress", "localhost");
 		
 		serverPort = config.getInt("serverPort");
-		if(serverPort < 1 || serverPort > 65536)
+		if(serverPort < 1 || serverPort > 65535)
 			throw new IllegalArgumentException();
 		
 		try {
