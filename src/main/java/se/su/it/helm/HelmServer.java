@@ -62,9 +62,9 @@ public class HelmServer implements Runnable {
 
 		greylist = new Greylist(this, log);
 		
-		String log4jFile = config.getString("logj4file");
-		if (log4jFile != null) {
-			PropertyConfigurator.configure(log4jFile);
+		String log4jConfig = config.getString("log4jConfig");
+		if (log4jConfig != null) {
+			PropertyConfigurator.configure(log4jConfig);
 		} else {
 			BasicConfigurator.configure();
 		}
