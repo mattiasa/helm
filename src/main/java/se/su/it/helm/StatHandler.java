@@ -39,6 +39,8 @@ public class StatHandler extends Thread {
 			long freq = deltareqs/deltatime;
 
 			log.debug("Processed " + freq + " requests/second.");
+
+			server.setFreq(freq);
 			
 			lasttime = curtime;
 			lastreqs = curreqs;

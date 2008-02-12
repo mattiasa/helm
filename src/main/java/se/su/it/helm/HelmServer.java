@@ -39,6 +39,7 @@ public class HelmServer implements Runnable {
 	private Long admittedAWL = new Long(0);
 	private Long firstReject = new Long(0);
 	private Long update = new Long(0);
+	private Long freq = new Long(0);
 
 
 	public HelmServer(Configuration config) throws TerminatingHelmException {
@@ -257,6 +258,16 @@ public class HelmServer implements Runnable {
 	public synchronized void addUpdate() {
 		synchronized (update) {
 			update++;
+		}
+	}
+	public Long getFreq() {
+		synchronized(freq) {
+			return freq;
+		}
+	}
+	public void setFreq(Long freq) {
+		synchronized(freq) {
+			this.freq = freq;
 		}
 	}
 

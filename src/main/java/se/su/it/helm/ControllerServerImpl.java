@@ -49,6 +49,7 @@ public class ControllerServerImpl extends UnicastRemoteObject implements Control
 		stats.add(new ControllerStatistic("admittedAWL", server.getadmittedAWL().toString(), "counter"));
 		stats.add(new ControllerStatistic("firstReject", server.getfirstReject().toString(), "counter"));
 		stats.add(new ControllerStatistic("update", server.getUpdate().toString(), "counter"));
+		stats.add(new ControllerStatistic("request-per-second", server.getFreq().toString(), "gauge"));
 
 		return stats;
 	}
