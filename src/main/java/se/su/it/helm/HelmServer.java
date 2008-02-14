@@ -19,7 +19,7 @@ import java.lang.Runtime;
 public class HelmServer implements Runnable {
 	private ServerSocket serverSocket;
 	private boolean isRunning;
-	private String version = "helm-0.0.2";
+	private String version = "helm-0.0.3";
 	private Greylist greylist;
 	private Logger log;
 	private boolean stats=false;
@@ -73,7 +73,7 @@ public class HelmServer implements Runnable {
 		gcInterval = config.getInt("gcInterval", 60);
 		gcInterval *= 1000;
 		
-		controllerPort = config.getInt("controllerPort", 4713);
+		controllerPort = getControllerPort(config); 
 		
 		serverThread = new Thread(this);
 	}
@@ -138,11 +138,18 @@ public class HelmServer implements Runnable {
 			}
 		}
 	}
+
+	public static int getControllerPort(Configuration cnf)
+	{
+		return cnf.getInt("controllerPort", 4713);
+	}
+	
+	
 	public static void main(String[] args) {
 
 		try {
 			if (args.length != 2) {
-				System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile> [start|create-database]");
+				System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile> [start|stop|statistics|create-database|reset-database|gc]");
 				Runtime.getRuntime().exit(1);
 			}
 
@@ -158,15 +165,15 @@ public class HelmServer implements Runnable {
 				HelmServer s = new HelmServer(cnf);
 				s.resetDatabase();
 			} else if (args[1].equals("gc")) {
-				ControllerClient client = new ControllerClient(cnf, 4713);
+				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
 				String r = client.runGarbageCollector();
 				System.out.println("gc: " + r);
 			} else if (args[1].equals("stop")) {
-				ControllerClient client = new ControllerClient(cnf, 4713);
+				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
 				String r = client.stopServer();
 				System.out.println("stop: " + r);
 			} else if (args[1].equals("statistics")) {
-				ControllerClient client = new ControllerClient(cnf, 4713);
+				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
 				
 				List<ControllerStatistic> stats= client.getStatistics();
 				
