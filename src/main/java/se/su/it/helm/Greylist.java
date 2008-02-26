@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-
 import org.apache.log4j.Logger;
 
 public class Greylist {
@@ -58,6 +57,7 @@ public class Greylist {
 			log.debug("Getting db connection for add");
 			conn = db.getConnection();
 	        	
+			long starttime = System.currentTimeMillis();
 			statement = conn.prepareStatement("INSERT INTO greylist (ip, sender, recipient, first_seen, last_seen, connection_count) " +
 					"values (?,?,?,?,?,?)");
 			
@@ -71,6 +71,7 @@ public class Greylist {
 			
 			log.debug("Executing statement: " + statement);
 			statement.execute();
+			log.debug("TIMER: addGreylistData: " + (System.currentTimeMillis() - starttime));
 	            
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -109,7 +110,8 @@ public class Greylist {
 	        	
 			log.debug("Getting db connection for get");
 			conn = db.getConnection();
-	        	
+			
+			long starttime = System.currentTimeMillis();	
 			statement = conn.prepareStatement("SELECT id,ip,sender,recipient,first_seen,last_seen,connection_count FROM greylist where ip = ? and sender = ? and recipient = ?");
 			
 			statement.setString(1, data.getSenderIp());
@@ -118,7 +120,7 @@ public class Greylist {
 			
 			log.debug("Executing statement: " + statement);
 			rset = statement.executeQuery();
-			
+			log.debug("TIMER: getGreylistData: " + (System.currentTimeMillis() - starttime));
 			
 			if(rset.next()) { 
 			
@@ -169,6 +171,7 @@ public class Greylist {
 			log.debug("Getting db connection for update");
 			conn = db.getConnection();
 	        	
+			long starttime = System.currentTimeMillis();
 			statement = conn.prepareStatement("UPDATE greylist set connection_count=?, last_seen=? where id = ?");
 			
 			statement.setInt(1,data.getCount());
@@ -177,8 +180,8 @@ public class Greylist {
 			
 			// log.debug("Executing statement: " + statement);
 			statement.execute();
+			log.debug("TIMER: updateGreylistData: " + (System.currentTimeMillis() - starttime));
 
-	            
 		} catch(SQLException e) {
 			e.printStackTrace();
 			throw new NonFatalHelmException("Got SQLException when updating database", e);
@@ -216,6 +219,7 @@ public class Greylist {
 			log.debug("Getting db connection for check AWL");
 			conn = db.getConnection();
 	        	
+			long starttime = System.currentTimeMillis();
 			statement = conn.prepareStatement("SELECT id FROM greylist WHERE ip = ? and first_seen < ? and connection_count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
@@ -223,6 +227,7 @@ public class Greylist {
 			
 			log.debug("Executing statement: " + statement);
 			rset = statement.executeQuery();
+			log.debug("TIMER: checkAWL: " + (System.currentTimeMillis() - starttime));
 			
 			/* found at least one entry */
 			if(rset.next()) {
@@ -375,9 +380,11 @@ public class Greylist {
 			log.debug("Getting db connection for gc");
 
 			conn = db.getConnection();
+			long starttime = System.currentTimeMillis();
 			statement = conn.prepareStatement("DELETE FROM greylist WHERE last_seen <= ?");
 			statement.setTimestamp(1,new Timestamp(lastseen));
 			statement.executeUpdate();
+			log.debug("TIMER: garbageCollectDatabase: " + (System.currentTimeMillis() - starttime));
 
 		} catch(SQLException e) {
 			e.printStackTrace();

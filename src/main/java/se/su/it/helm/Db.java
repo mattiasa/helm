@@ -29,7 +29,9 @@ public class Db {
 	public Connection getConnection() throws SQLException {
 		Connection conn;
 		log.debug("Creating connection.");
+		long starttime = System.currentTimeMillis();
         conn = DriverManager.getConnection("jdbc:apache:commons:dbcp:helm");
+        log.debug("TIMER: getConnection: " + (System.currentTimeMillis() - starttime));
         return conn;
 	}
 	
