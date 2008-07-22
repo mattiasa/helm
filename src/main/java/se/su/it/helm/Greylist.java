@@ -13,7 +13,9 @@ public class Greylist {
 	private Db db;
 	private Logger log;
 	private HelmServer server;
-	private int delay;
+	private RBL rbl;
+	private int shortDelay;
+	private int longDelay;
 	private long gcdays;
 
 	
@@ -26,8 +28,13 @@ public class Greylist {
 												 "com.mysql.jdbc.Driver"), 
 					server.getConfig().getString("jdbcUrl"),
 					log);
-		delay = server.getConfig().getInt("delay", 20);
-		delay *= 1000;
+		rbl = new RBL(server.getConfig(), log);
+		shortDelay = server.getConfig().getInt("delay", 20);
+		shortDelay *= 1000;
+
+		longDelay = server.getConfig().getInt("rbldelay", 3600);
+		longDelay *= 1000;
+		
 
 		gcdays = server.getConfig().getInt("gcdays", 5);
 
@@ -223,7 +230,7 @@ public class Greylist {
 			statement = conn.prepareStatement("SELECT id FROM greylist WHERE ip = ? and first_seen < ? and connection_count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
-			statement.setTimestamp(2, new Timestamp(currentTime - delay));
+			statement.setTimestamp(2, new Timestamp(currentTime - shortDelay));
 			
 			log.debug("Executing statement: " + statement);
 			rset = statement.executeQuery();
@@ -261,7 +268,16 @@ public class Greylist {
 		GreylistData gl;
 		long currentTime = System.currentTimeMillis();
 		long timeLeft;
+		int delay;
+		
+		boolean inRbls = rbl.isInRBLS(data.getSenderIp());
 
+		if(inRbls) {
+			delay = longDelay;
+		} else {
+			delay = shortDelay;
+		}
+		
 		gl = getGreylistData(data);
 		if(gl == null) {
 			addGreylistData(data);
@@ -288,8 +304,8 @@ public class Greylist {
 			return new GreylistResult(true);
 		}
 		
-		/* ok, not passing by itself, lets try AWL */
-		if (checkAWL(data, currentTime)) {
+		/* ok, not passing by itself, lets try AWL if it's not RBL:ed */
+		if (!inRbls && checkAWL(data, currentTime)) {
 			server.addadmittedAWL();
 			log.warn("helm awl from=<" + data.getSenderAddress() + 
 					"> to=<" + data.getRecipientAddress() + 
