@@ -55,6 +55,8 @@ public class TestServer {
 		config.setProperty("serverPort", serverPort.toString());
 		config.setProperty("controllerPort", controllerPort.toString());
 		config.setProperty("delay", "5");
+		config.setProperty("rbldelay", "10");
+		config.setProperty("rbls", "pbl.spamhaus.org");
 		try {
 		server = new HelmServer(config);
 		server.createDatabase();
@@ -211,6 +213,33 @@ public class TestServer {
 					"action=dunno");
 	}
 	
+	@Test (groups = {"connection"})
+	public void connectionRBL() throws Exception {
+		System.out.println("connection rbl test");
+		testMessage("sender=pass6-s@su.se\n" + 
+					"recipient=pass6-r@su.se\n" +	
+					"client_address=127.0.0.2",	
+					"action=defer_if_permit");
+
+		Thread.sleep(4000);
+		
+		testMessage("sender=pass6-s@su.se\n" + 
+					"recipient=pass6-r@s.se\n" +	
+					"client_address=127.0.0.2",	
+					"action=defer_if_permit");
+		
+		Thread.sleep(8000);
+		
+		testMessage("sender=pass6-s@su.se\n" + 
+					"recipient=pass6-r@su.se\n" +	
+					"client_address=127.0.0.2",	
+					"action=dunno");
+	
+		testMessage("sender=pass6-s2@su.se\n" + 
+					"recipient=pass6-r2@su.se\n" +	
+					"client_address=127.0.0.2",	
+					"action=defer_if_permit");
+	}
 	@Test (groups = {"controller"})
 	public void controllerCheck() throws Exception {
 		ControllerClient client = new ControllerClient(config, controllerPort);
