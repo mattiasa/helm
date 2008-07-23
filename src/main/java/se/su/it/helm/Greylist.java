@@ -18,6 +18,7 @@ public class Greylist {
 	private int longDelay;
 	private long gcdays;
 
+	private String glmessage;
 	
 	public Greylist(HelmServer server, Logger log)
 		throws TerminatingHelmException
@@ -34,6 +35,8 @@ public class Greylist {
 
 		longDelay = server.getConfig().getInt("rbldelay", 3600);
 		longDelay *= 1000;
+		
+		glmessage = server.getConfig().getString("glmessage", "Temporarily blocked for @SECONDS@ seconds.");
 		
 
 		gcdays = server.getConfig().getInt("gcdays", 5);
@@ -318,7 +321,9 @@ public class Greylist {
 				"> ip=" + data.getSenderIp() + " delay remaining=" + timeLeft/1000);
 
 
-		GreylistResult res = new GreylistResult(false, "Temporarily blocked for " + timeLeft/1000 + " seconds.");
+		String message = glmessage.replace("@SECONDS@" , Long.toString(timeLeft/1000));
+		
+		GreylistResult res = new GreylistResult(false, message);
 		server.addfirstReject();
 		return res;
 	}
