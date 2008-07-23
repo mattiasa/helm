@@ -318,7 +318,7 @@ public class Greylist {
 				"> ip=" + data.getSenderIp() + " delay remaining=" + timeLeft/1000);
 
 
-		GreylistResult res = new GreylistResult(false, "Greylisted. Will remove block in " + timeLeft/1000 + " seconds.");
+		GreylistResult res = new GreylistResult(false, "Temporarily blocked for " + timeLeft/1000 + " seconds.");
 		server.addfirstReject();
 		return res;
 	}
