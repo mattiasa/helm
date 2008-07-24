@@ -9,6 +9,17 @@
                 
  
       <context:annotation-config/>
+
+	<bean id="HelmConfiguration" class="se.su.it.helm.HelmConfiguration">
+ 		
+	</bean>
+ 
+ 	<bean id="HelmMaster" class="se.su.it.helm.HelmMasterImpl" init-method="init"> 
+ 	  <property name="helmConfiguration">
+		<ref bean="HelmConfiguration" />
+ 	  </property>
+ 	  
+ 	</bean>
  
  <!-- 
   <bean id="..." class="...">

@@ -20,7 +20,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.lang.Runtime;
 
 
-public class HelmMaster implements Runnable {
+public class HelmMasterImpl implements Runnable, HelmMaster {
 	private ServerSocket serverSocket;
 	private boolean isRunning;
 	private String version = "helm-0.0.3";
@@ -33,6 +33,8 @@ public class HelmMaster implements Runnable {
 	private int serverPort;
 	private String bindAddr;
 	
+	private HelmConfiguration helmConfiguration;
+	
 	private Configuration config ;
 	
 	/* statistics */
@@ -44,11 +46,13 @@ public class HelmMaster implements Runnable {
 	private Long firstReject = new Long(0);
 	private Long update = new Long(0);
 	private Long freq = new Long(0);
+ 
+	
 
-
-	public HelmMaster(Configuration config) throws TerminatingHelmException {
+	public void init() throws TerminatingHelmException {
 		
-		this.config = config;
+		config = helmConfiguration.getConfiguration();
+		
 		
 		bindAddr = config.getString("bindAddress", "localhost");
 		
@@ -62,7 +66,7 @@ public class HelmMaster implements Runnable {
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
-		log = Logger.getLogger(HelmMaster.class.getName());
+		log = Logger.getLogger(HelmMasterImpl.class.getName());
 		log.setLevel(Level.WARN);
 
 		greylist = new Greylist(this, log);
@@ -81,14 +85,23 @@ public class HelmMaster implements Runnable {
 		
 		serverThread = new Thread(this);
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getVersion()
+	 */
 	public String getVersion() {
 		return version;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#isRunning()
+	 */
 	public boolean isRunning() {
 		return isRunning;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#stop()
+	 */
 	public void stop() {
 		isRunning = false;
 		synchronized(this) {
@@ -101,11 +114,17 @@ public class HelmMaster implements Runnable {
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#startService()
+	 */
 	public void startService() {
 		isRunning = true;
 		serverThread.start();
 	}
 
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#run()
+	 */
 	public void run() {
 		
 		if(stats) {
@@ -148,117 +167,192 @@ public class HelmMaster implements Runnable {
 		return cnf.getInt("controllerPort", 4713);
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getRequests()
+	 */
 	public Long getRequests() {
 		synchronized (requests) {
 			return requests;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addRequest()
+	 */
 	public void addRequest() {
 		synchronized (requests) {
 			requests++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getClients()
+	 */
 	public Long getClients() {
 		synchronized (clients) {
 			return clients;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addClient()
+	 */
 	public void addClient() {
 		synchronized (clients) {
 			clients++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#delClient()
+	 */
 	public void delClient() {
 		synchronized (clients) {
 			clients--;
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getFirstInsert()
+	 */
 	public Long getFirstInsert() {
 		synchronized (firstInsert) {
 			return firstInsert;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addFirstInsert()
+	 */
 	public synchronized void addFirstInsert() {
 		synchronized (firstInsert) {
 			firstInsert++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getadmittedMatch()
+	 */
 	public Long getadmittedMatch() {
 		synchronized (admittedMatch) {
 			return admittedMatch;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addadmittedMatch()
+	 */
 	public synchronized void addadmittedMatch() {
 		synchronized (admittedMatch) {
 			admittedMatch++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getadmittedAWL()
+	 */
 	public Long getadmittedAWL() {
 		synchronized (admittedAWL) {
 			return admittedAWL;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addadmittedAWL()
+	 */
 	public synchronized void addadmittedAWL() {
 		synchronized (admittedAWL) {
 			admittedAWL++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getfirstReject()
+	 */
 	public Long getfirstReject() {
 		synchronized (firstReject) {
 			return firstReject;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addfirstReject()
+	 */
 	public synchronized void addfirstReject() {
 		synchronized (firstReject) {
 			firstReject++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getUpdate()
+	 */
 	public Long getUpdate() {
 		synchronized (update) {
 			return update;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#addUpdate()
+	 */
 	public synchronized void addUpdate() {
 		synchronized (update) {
 			update++;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getFreq()
+	 */
 	public Long getFreq() {
 		synchronized(freq) {
 			return freq;
 		}
 	}
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#setFreq(java.lang.Long)
+	 */
 	public void setFreq(Long freq) {
 		synchronized(freq) {
 			this.freq = freq;
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getConfig()
+	 */
 	public Configuration getConfig() 
 	{
 		return config;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getLogger()
+	 */
 	public Logger getLogger()
 	{
 		return log;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#getBindAddress()
+	 */
 	public String getBindAddress()
 	{
 		return bindAddr;
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#createDatabase()
+	 */
 	public void createDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.createDatabase();
 	}
 	
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#garbageCollectDatabase()
+	 */
 	public void garbageCollectDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.garbageCollectDatabase();
 	}
 
+	/* (non-Javadoc)
+	 * @see se.su.it.helm.HelmMaster#resetDatabase()
+	 */
 	public void resetDatabase() throws FatalHelmException, NonFatalHelmException {
 		greylist.resetDatabase();
 	}
+	
+	public void setHelmConfiguration(HelmConfiguration helmConfiguration) {
+		this.helmConfiguration = helmConfiguration;
+	}
+
+	
 }
