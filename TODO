@@ -6,3 +6,4 @@
 * add connection pooling
 * add more tests
 * fix load_path in rspec's
+* Create database automatically if it hasn't been created
