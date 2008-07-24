@@ -14,6 +14,11 @@ public class HelmConfiguration {
 
 		setConfiguration(new PropertiesConfiguration(System.getProperty("helmConfiguration")));
 	}
+	
+	public HelmConfiguration(Configuration config) {
+		this.configuration = config;
+	}
+	
 
 	public Configuration getConfiguration() {
 		return configuration;
@@ -28,5 +33,11 @@ public class HelmConfiguration {
 	{
 		return configuration.getInt("controllerPort", 4713);
 	}
+	
+	public String getControllerAddres() {
+		return configuration.getString("controllerAddress", "localhost");
+
+	}
+
 	
 }

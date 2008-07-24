@@ -14,7 +14,8 @@ public class TestServer {
 	Integer serverPort = 4712;
 	Integer controllerPort = 4713;
 	HelmMaster server;
-	BaseConfiguration config;
+	
+	HelmConfiguration config;
 	
 	private void
 	testMessage(String message, String expects)
@@ -46,21 +47,24 @@ public class TestServer {
 	@BeforeClass
 	public void setUp() throws Exception {
 		
-		/*
+		
 		System.out.println("setup db");
 		System.out.println("start helm");
 
-		config = new BaseConfiguration();
+		BaseConfiguration cfg = new BaseConfiguration();
 		
-		config.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
-		config.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
-		config.setProperty("serverPort", serverPort.toString());
-		config.setProperty("controllerPort", controllerPort.toString());
-		config.setProperty("delay", "5");
-		config.setProperty("rbldelay", "10");
-		config.setProperty("rbls", "pbl.spamhaus.org");
+		cfg.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
+		cfg.setProperty("jdbcDriver", "org.hsqldb.jdbcDriver");
+		cfg.setProperty("serverPort", serverPort.toString());
+		cfg.setProperty("controllerPort", controllerPort.toString());
+		cfg.setProperty("delay", "5");
+		cfg.setProperty("rbldelay", "10");
+		cfg.setProperty("rbls", "pbl.spamhaus.org");
+		
+		HelmConfiguration testConfig = new HelmConfiguration(cfg); 
+		
 		try {
-		server = new HelmMasterImpl(config);
+		server = new HelmMasterImpl();
 		server.createDatabase();
 		server.startService();
 		} catch (HelmException e) {
@@ -70,7 +74,7 @@ public class TestServer {
 		// setup server
 		 
 		 
-		 */
+		 
 	}
 	
 	@AfterClass
@@ -247,7 +251,7 @@ public class TestServer {
 	}
 	@Test (groups = {"controller"})
 	public void controllerCheck() throws Exception {
-		ControllerClient client = new ControllerClient(config, controllerPort);
+		ControllerClient client = new ControllerClient(config);
 		
 		String s = client.checkServer();
 		if (!s.equals("Server running")) {
@@ -256,7 +260,7 @@ public class TestServer {
 	}
 	@Test (groups = {"controller"})
 	public void controllerGC() throws Exception {
-		ControllerClient client = new ControllerClient(config, controllerPort);
+		ControllerClient client = new ControllerClient(config);
 		
 		String s = client.runGarbageCollector();
 		if (!s.equals("ok")) {
@@ -266,7 +270,7 @@ public class TestServer {
 	
 	@Test (groups = {"controller"})
 	public void getStatitics() throws Exception {
-		ControllerClient client = new ControllerClient(config, controllerPort);
+		ControllerClient client = new ControllerClient(config);
 		
 		List<ControllerStatistic> stats = client.getStatistics();
 		

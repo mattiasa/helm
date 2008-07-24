@@ -10,12 +10,13 @@ import org.apache.commons.configuration.Configuration;
 public class ControllerClient {
 	private Controller controller;
 	private String controllerAddr;
-
+	private int port;	
 	
-	public ControllerClient(Configuration config, int port)
+	public ControllerClient(HelmConfiguration config)
 		throws RemoteException, NotBoundException
 	{
-		controllerAddr = config.getString("controllerAddress", "localhost");
+		controllerAddr = config.getControllerAddres();
+		port = config.getControllerPort();
 
 	    Registry registry = ControllerRegistry.getRegistry(controllerAddr, port);
 	    controller = (Controller) registry.lookup("HelmController");

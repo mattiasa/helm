@@ -41,15 +41,15 @@ public class HelmServer {
 				s.resetDatabase();
 
 			} else if (args[1].equals("gc")) {
-				ControllerClient client = new ControllerClient(c.getConfiguration(), c.getControllerPort());
+				ControllerClient client = new ControllerClient(c);
 				String r = client.runGarbageCollector();
 				System.out.println("gc: " + r);
 			} else if (args[1].equals("stop")) {
-				ControllerClient client = new ControllerClient(c.getConfiguration(), c.getControllerPort());
+				ControllerClient client = new ControllerClient(c);
 				String r = client.stopServer();
 				System.out.println("stop: " + r);
 			} else if (args[1].equals("statistics")) {
-				ControllerClient client = new ControllerClient(c.getConfiguration(), c.getControllerPort());
+				ControllerClient client = new ControllerClient(c);
 				
 				List<ControllerStatistic> stats= client.getStatistics();
 				
