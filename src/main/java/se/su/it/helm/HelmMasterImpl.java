@@ -51,37 +51,23 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 
 	public void init() throws TerminatingHelmException {
 		
-		config = helmConfiguration.getConfiguration();
+		bindAddr = helmConfiguration.getBindAddress();
+		serverPort = helmConfiguration.getServerPort();
+		gcInterval = helmConfiguration.getGcInterval();
+		controllerPort = helmConfiguration.getControllerPort();
 		
-		
-		bindAddr = config.getString("bindAddress", "localhost");
-		
-		serverPort = config.getInt("serverPort");
-		if(serverPort < 1 || serverPort > 65535)
-			throw new IllegalArgumentException();
+		log = Logger.getLogger(HelmMasterImpl.class.getName());
+		log.setLevel(Level.WARN);
 		
 		try {
 			serverSocket = new ServerSocket(serverPort, 10, 
 					InetAddress.getByName(bindAddr));
 		} catch (IOException e) {
-			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
+			throw new TerminatingHelmException("Couldn't create server socket on port " + serverPort, e);
 		}
-		log = Logger.getLogger(HelmMasterImpl.class.getName());
-		log.setLevel(Level.WARN);
+
 
 		greylist = new Greylist(this, log);
-		
-		String log4jConfig = config.getString("log4jConfig");
-		if (log4jConfig != null) {
-			PropertyConfigurator.configure(log4jConfig);
-		} else {
-			BasicConfigurator.configure();
-		}
-		
-		gcInterval = config.getInt("gcInterval", 60);
-		gcInterval *= 1000;
-		
-		controllerPort = getControllerPort(config); 
 		
 		serverThread = new Thread(this);
 	}
@@ -162,11 +148,6 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 		}
 	}
 
-	public static int getControllerPort(Configuration cnf)
-	{
-		return cnf.getInt("controllerPort", 4713);
-	}
-	
 	/* (non-Javadoc)
 	 * @see se.su.it.helm.HelmMaster#getRequests()
 	 */

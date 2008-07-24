@@ -15,7 +15,7 @@ public class ControllerClient {
 	public ControllerClient(HelmConfiguration config)
 		throws RemoteException, NotBoundException
 	{
-		controllerAddr = config.getControllerAddres();
+		controllerAddr = config.getControllerAddress();
 		port = config.getControllerPort();
 
 	    Registry registry = ControllerRegistry.getRegistry(controllerAddr, port);
