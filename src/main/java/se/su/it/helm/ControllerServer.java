@@ -5,11 +5,11 @@ import java.rmi.registry.Registry;
 
 public class ControllerServer extends Thread {
 
-	private HelmServer server;
+	private HelmMaster server;
 	private int controllerPort;
 	private ControllerServerImpl impl;
 
-	public ControllerServer(HelmServer server, int controllerPort) throws RemoteException {
+	public ControllerServer(HelmMaster server, int controllerPort) throws RemoteException {
 		this.server = server;
 		this.controllerPort = controllerPort;
 		this.impl = new ControllerServerImpl(server);

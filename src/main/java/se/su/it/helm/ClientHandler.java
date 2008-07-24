@@ -14,12 +14,12 @@ import org.apache.log4j.Logger;
 class ClientHandler extends Thread {
 	private BufferedReader in;
 	private PrintWriter out;
-	private HelmServer server;
+	private HelmMaster server;
 	private Logger log;
 	private Socket socket;
 	private Greylist greylist;
 	
-	public ClientHandler(HelmServer server, Socket socket, Logger log, Greylist greylist) throws FatalHelmException {
+	public ClientHandler(HelmMaster server, Socket socket, Logger log, Greylist greylist) throws FatalHelmException {
 		this.server = server;
 		this.socket = socket;
 		this.log = log;

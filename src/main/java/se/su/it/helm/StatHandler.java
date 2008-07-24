@@ -4,10 +4,10 @@ import org.apache.log4j.Logger;
 
 public class StatHandler extends Thread {
 
-	private HelmServer server;
+	private HelmMaster server;
 	private Logger log;
 	
-	public StatHandler(HelmServer server, Logger log) {
+	public StatHandler(HelmMaster server, Logger log) {
 		
 		this.server = server;
 		this.log = log;

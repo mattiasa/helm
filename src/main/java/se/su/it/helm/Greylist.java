@@ -12,7 +12,7 @@ public class Greylist {
 
 	private Db db;
 	private Logger log;
-	private HelmServer server;
+	private HelmMaster server;
 	private RBL rbl;
 	private int shortDelay;
 	private int longDelay;
@@ -20,7 +20,7 @@ public class Greylist {
 
 	private String glmessage;
 	
-	public Greylist(HelmServer server, Logger log)
+	public Greylist(HelmMaster server, Logger log)
 		throws TerminatingHelmException
 	{
 		this.log = log;

@@ -2,10 +2,10 @@ package se.su.it.helm;
 
 public class GarbageCollector extends Thread {
 
-	private HelmServer server;
+	private HelmMaster server;
 	long sleeptime;
 
-	public GarbageCollector(HelmServer server, long sleeptime) {
+	public GarbageCollector(HelmMaster server, long sleeptime) {
 
 		this.server = server;
 		this.sleeptime = sleeptime;

@@ -7,9 +7,9 @@ import java.util.List;
 
 public class ControllerServerImpl extends UnicastRemoteObject implements Controller {
 	private static final long serialVersionUID = 3239921844111508863L;
-	private HelmServer server;
+	private HelmMaster server;
 
-	public ControllerServerImpl(HelmServer server) throws RemoteException {
+	public ControllerServerImpl(HelmMaster server) throws RemoteException {
 		super();
 		this.server = server;
 	}

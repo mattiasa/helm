@@ -12,9 +12,9 @@ import java.rmi.server.RMIServerSocketFactory;
 
 class ssf implements RMIServerSocketFactory {
 	ServerSocket s;
-	HelmServer server;
+	HelmMaster server;
 
-	ssf(HelmServer server) {
+	ssf(HelmMaster server) {
 		this.server = server;
 	}
 	public ServerSocket createServerSocket(int port) throws IOException
@@ -47,7 +47,7 @@ class csf implements RMIClientSocketFactory {
 }
 
 public class ControllerRegistry {
-	static Registry createRegistry(HelmServer server, int port) throws RemoteException
+	static Registry createRegistry(HelmMaster server, int port) throws RemoteException
 	{
 		return LocateRegistry.createRegistry(port,
 				(RMIClientSocketFactory)new csf(),

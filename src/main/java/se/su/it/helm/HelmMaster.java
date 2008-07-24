@@ -13,10 +13,14 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.Level;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import java.lang.Runtime;
 
 
-public class HelmServer implements Runnable {
+public class HelmMaster implements Runnable {
 	private ServerSocket serverSocket;
 	private boolean isRunning;
 	private String version = "helm-0.0.3";
@@ -42,7 +46,7 @@ public class HelmServer implements Runnable {
 	private Long freq = new Long(0);
 
 
-	public HelmServer(Configuration config) throws TerminatingHelmException {
+	public HelmMaster(Configuration config) throws TerminatingHelmException {
 		
 		this.config = config;
 		
@@ -58,7 +62,7 @@ public class HelmServer implements Runnable {
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + config, e);
 		}
-		log = Logger.getLogger(HelmServer.class.getName());
+		log = Logger.getLogger(HelmMaster.class.getName());
 		log.setLevel(Level.WARN);
 
 		greylist = new Greylist(this, log);
@@ -144,53 +148,6 @@ public class HelmServer implements Runnable {
 		return cnf.getInt("controllerPort", 4713);
 	}
 	
-	
-	public static void main(String[] args) {
-
-		try {
-			if (args.length != 2) {
-				System.out.println("usage: java -cp helm-<ver>.jar se.su.it.helm.HelmServer <configfile> [start|stop|statistics|create-database|reset-database|gc]");
-				Runtime.getRuntime().exit(1);
-			}
-
-			Configuration cnf = new PropertiesConfiguration(args[0]);
-					
-			if (args[1].equals("start")) {
-				HelmServer s = new HelmServer(cnf);
-				s.startService();
-			} else if (args[1].equals("create-database")) {
-				HelmServer s = new HelmServer(cnf);
-				s.createDatabase();
-			} else if (args[1].equals("reset-database")) {
-				HelmServer s = new HelmServer(cnf);
-				s.resetDatabase();
-			} else if (args[1].equals("gc")) {
-				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
-				String r = client.runGarbageCollector();
-				System.out.println("gc: " + r);
-			} else if (args[1].equals("stop")) {
-				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
-				String r = client.stopServer();
-				System.out.println("stop: " + r);
-			} else if (args[1].equals("statistics")) {
-				ControllerClient client = new ControllerClient(cnf, getControllerPort(cnf));
-				
-				List<ControllerStatistic> stats= client.getStatistics();
-				
-				for (ControllerStatistic o : stats) {
-					System.out.println(o.getType() + "/" + o.getName() + ": " + o.getValue());
-				}
-			} else {
-				System.err.println("unknown command: " + args[1]);
-				Runtime.getRuntime().exit(1);
-			}
-		} catch (HelmException e) {
-			System.out.println(e.getString());
-		} catch(Exception e) {
-			System.err.println("main exception: " + e);
-			e.printStackTrace();
-		}
-	}
 	public Long getRequests() {
 		synchronized (requests) {
 			return requests;

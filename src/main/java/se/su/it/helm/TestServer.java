@@ -13,7 +13,7 @@ public class TestServer {
 	
 	Integer serverPort = 4712;
 	Integer controllerPort = 4713;
-	HelmServer server;
+	HelmMaster server;
 	BaseConfiguration config;
 	
 	private void
@@ -58,7 +58,7 @@ public class TestServer {
 		config.setProperty("rbldelay", "10");
 		config.setProperty("rbls", "pbl.spamhaus.org");
 		try {
-		server = new HelmServer(config);
+		server = new HelmMaster(config);
 		server.createDatabase();
 		server.startService();
 		} catch (HelmException e) {
