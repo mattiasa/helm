@@ -45,6 +45,8 @@ public class TestServer {
 
 	@BeforeClass
 	public void setUp() throws Exception {
+		
+		/*
 		System.out.println("setup db");
 		System.out.println("start helm");
 
@@ -58,7 +60,7 @@ public class TestServer {
 		config.setProperty("rbldelay", "10");
 		config.setProperty("rbls", "pbl.spamhaus.org");
 		try {
-		server = new HelmMaster(config);
+		server = new HelmMasterImpl(config);
 		server.createDatabase();
 		server.startService();
 		} catch (HelmException e) {
@@ -66,6 +68,9 @@ public class TestServer {
 			throw e;
 		}
 		// setup server
+		 
+		 
+		 */
 	}
 	
 	@AfterClass
