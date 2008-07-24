@@ -12,36 +12,50 @@ public class Greylist {
 
 	private Db db;
 	private Logger log;
+	
 	private HelmMaster server;
+	
+	private HelmConfiguration config;
+
+
 	private RBL rbl;
-	private int shortDelay;
-	private int longDelay;
+	private long shortDelay;
+	private long longDelay;
 	private long gcdays;
 
 	private String glmessage;
 	
-	public Greylist(HelmMaster server, Logger log)
+	
+	public Greylist() {
+		System.out.println("foo");
+	
+	}
+	
+	
+	
+	public void init()
 		throws TerminatingHelmException
 	{
-		this.log = log;
+	
 		
-		db = new Db(server.getConfig().getString("jdbcDriver",
-												 "com.mysql.jdbc.Driver"), 
-					server.getConfig().getString("jdbcUrl"),
+		this.log = Logger.getLogger(this.getClass());
+		
+		db = new Db(config.getJdbcDriver(),
+				config.getJdbcUrl(),
 					log);
-		rbl = new RBL(server.getConfig(), log);
-		shortDelay = server.getConfig().getInt("delay", 20);
-		shortDelay *= 1000;
+		rbl = new RBL(config.getConfiguration(), log);
 
-		longDelay = server.getConfig().getInt("rbldelay", 3600);
-		longDelay *= 1000;
+ 
+		shortDelay = config.getDelay();
+
+
+		longDelay = config.getRblDelay();
 		
-		glmessage = server.getConfig().getString("glmessage", "Temporarily blocked for @SECONDS@ seconds.");
+		glmessage = config.getGlMessage();
 		
 
-		gcdays = server.getConfig().getInt("gcdays", 5);
+		gcdays = config.getGcDays();
 
-		this.server = server;
 	}
 
 	void shutdown() throws TerminatingHelmException {
@@ -271,7 +285,7 @@ public class Greylist {
 		GreylistData gl;
 		long currentTime = System.currentTimeMillis();
 		long timeLeft;
-		int delay;
+		long delay;
 		
 		boolean inRbls = rbl.isInRBLS(data.getSenderIp());
 
@@ -439,6 +453,15 @@ public class Greylist {
 				db.returnConnection(conn);
 		}
 
+	} 
+	
+	public void setServer(HelmMaster server) {
+		this.server = server;
+	}
+
+
+	public void setConfig(HelmConfiguration config) {
+		this.config = config;
 	}
 
 }

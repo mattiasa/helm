@@ -65,9 +65,6 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 		} catch (IOException e) {
 			throw new TerminatingHelmException("Couldn't create server socket on port " + serverPort, e);
 		}
-
-
-		greylist = new Greylist(this, log);
 		
 		serverThread = new Thread(this);
 	}
@@ -333,6 +330,10 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 	
 	public void setHelmConfiguration(HelmConfiguration helmConfiguration) {
 		this.helmConfiguration = helmConfiguration;
+	}
+	
+	public void setGreylist(Greylist greylist) {
+		this.greylist = greylist;
 	}
 
 	

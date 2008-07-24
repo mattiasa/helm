@@ -9,7 +9,7 @@ import org.apache.log4j.PropertyConfigurator;
 public class HelmConfiguration {
 
 	
-	private Configuration configuration;
+	private Configuration config;
 	
 	
 
@@ -19,11 +19,11 @@ public class HelmConfiguration {
 		this(new PropertiesConfiguration(System.getProperty("helmConfiguration")));
 	}
 	
-	public HelmConfiguration(Configuration config) {
-		this.configuration = config;
+	public HelmConfiguration(Configuration cfg) {
+		this.config = cfg;
 		
 
-		String log4jConfig = configuration.getString("log4jConfig");
+		String log4jConfig = config.getString("log4jConfig");
 		if (log4jConfig != null) {
 			PropertyConfigurator.configure(log4jConfig);
 		} else {
@@ -34,31 +34,31 @@ public class HelmConfiguration {
 	
 
 	public Configuration getConfiguration() {
-		return configuration;
+		return config;
 	}
 
 	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
+		this.config = configuration;
 	}
 	
 
 	public int getControllerPort()
 	{
-		return configuration.getInt("controllerPort", 4713);
+		return config.getInt("controllerPort", 4713);
 	}
 	
 	public String getControllerAddress() {
-		return configuration.getString("controllerAddress", "localhost");
+		return config.getString("controllerAddress", "localhost");
 
 	} 
 	
 	public String getBindAddress() { 
-		return configuration.getString("bindAddress", "localhost");
+		return config.getString("bindAddress", "localhost");
 	}
 
 	public int getServerPort() throws TerminatingHelmException { 
 
-		int serverPort = configuration.getInt("serverPort");
+		int serverPort = config.getInt("serverPort");
 		if(serverPort < 1 || serverPort > 65535)
 			throw new TerminatingHelmException("Incorrect port number specified: " + serverPort, null);
 		return serverPort;
@@ -66,11 +66,38 @@ public class HelmConfiguration {
 
 	public long getGcInterval() {
 	
-		long gcInterval = configuration.getInt("gcInterval", 60);
+		long gcInterval = config.getInt("gcInterval", 60);
 		gcInterval *= 1000;
 	
 		return gcInterval;
 	}
+	public String getJdbcDriver() {
+		return config.getString("jdbcDriver", "com.mysql.jdbc.Driver");
+	}
+	public String getJdbcUrl() {
+		return config.getString("jdbcUrl");
+	}
 	
+	public long getDelay() { 
+		long shortDelay = config.getInt("delay", 20);
+		shortDelay *= 1000;
+		return shortDelay;
+	}
+	
+	public long getRblDelay() {
+
+		long longDelay = config.getInt("rbldelay", 3600);
+		longDelay *= 1000;
+		return longDelay;
+	}
+		
+	public String getGlMessage() {
+		return config.getString("glmessage", "Temporarily blocked for @SECONDS@ seconds.");
+	}
+	
+	public int getGcDays() {
+		return config.getInt("gcdays", 5);
+
+	}
 	
 }

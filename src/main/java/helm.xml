@@ -8,16 +8,19 @@
            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                 
  
-      <context:annotation-config/>
 
-	<bean id="HelmConfiguration" class="se.su.it.helm.HelmConfiguration">
- 		
+	<bean id="HelmConfiguration" class="se.su.it.helm.HelmConfiguration" scope="singleton"/>
+	
+	<bean id="Greylist" class="se.su.it.helm.Greylist" init-method="init" scope="singleton">
+		<property name="server" ref="HelmMaster" />
+		<property name="config" ref="HelmConfiguration" />
 	</bean>
+	
+	
  
- 	<bean id="HelmMaster" class="se.su.it.helm.HelmMasterImpl" init-method="init"> 
- 	  <property name="helmConfiguration">
-		<ref bean="HelmConfiguration" />
- 	  </property>
+ 	<bean id="HelmMaster" class="se.su.it.helm.HelmMasterImpl" init-method="init" scope="singleton"> 
+ 	  <property name="helmConfiguration" ref="HelmConfiguration" />
+ 	  <property name="greylist" ref="Greylist" /> 	  
  	  
  	</bean>
  
