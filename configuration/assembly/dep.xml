@@ -19,6 +19,8 @@
       <outputDirectory></outputDirectory>
       <includes>
         <include>**/*.jar</include>
+        <include>*.xml</include>
+        <include>**/*.xml</include>
       </includes>
     </fileSet>
   </fileSets>
