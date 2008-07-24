@@ -1,5 +1,6 @@
 package se.su.it.helm;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -11,12 +12,23 @@ public class HelmConfiguration {
 	
 	private Configuration config;
 	
-	
+	private static class ConfigurationFactory {
+		public static Configuration getConfiguration() throws ConfigurationException {
+			String configFile = System.getProperty("helmConfiguration");
+			if(configFile != null) {
+				return new PropertiesConfiguration(configFile);
+			} else {
+				return new BaseConfiguration();
+			}
+			
+		}
+	}
 
 	
 	public HelmConfiguration() throws ConfigurationException {
+		this(ConfigurationFactory.getConfiguration());
 
-		this(new PropertiesConfiguration(System.getProperty("helmConfiguration")));
+			
 	}
 	
 	public HelmConfiguration(Configuration cfg) {

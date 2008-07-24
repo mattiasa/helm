@@ -8,20 +8,21 @@
            http://www.springframework.org/schema/context/spring-context-2.5.xsd">
                 
  
-
 	<bean id="HelmConfiguration" class="se.su.it.helm.HelmConfiguration" scope="singleton"/>
 	
-	<bean id="Greylist" class="se.su.it.helm.Greylist" init-method="init" scope="singleton">
+ 	<bean id="Db" class="se.su.it.helm.Db" init-method="init" lazy-init="true" scope="singleton">
+ 		<property name="config" ref="HelmConfiguration" />
+ 	</bean>
+
+	<bean id="Greylist" class="se.su.it.helm.Greylist" init-method="init" lazy-init="true" scope="singleton">
 		<property name="server" ref="HelmMaster" />
 		<property name="config" ref="HelmConfiguration" />
+		<property name="db" ref="Db" />
 	</bean>
-	
-	
  
- 	<bean id="HelmMaster" class="se.su.it.helm.HelmMasterImpl" init-method="init" scope="singleton"> 
+ 	<bean id="HelmMaster" class="se.su.it.helm.HelmMasterImpl" init-method="init" lazy-init="true" scope="singleton"> 
  	  <property name="helmConfiguration" ref="HelmConfiguration" />
  	  <property name="greylist" ref="Greylist" /> 	  
- 	  
  	</bean>
  
  <!-- 

@@ -16,14 +16,14 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.log4j.Logger;
 
 public class Db {
-	Logger log;
+	Logger log = Logger.getLogger(this.getClass());
 	
-	public Db(String driver, String connectURI, Logger log) throws TerminatingHelmException {
-		this.log = log;
-		/*
-		try {
-		*/
-		setupDriver(driver, connectURI);
+
+	HelmConfiguration config;
+	
+	public void init() throws TerminatingHelmException {
+		setupDriver(config.getJdbcDriver(),
+				config.getJdbcUrl());
 	}
 	
 	public Connection getConnection() throws SQLException {
@@ -130,4 +130,10 @@ public class Db {
 		assert(gd.getRecipient()).equals(data.getRecipientAddress());
 	}
 	*/
+    
+
+	public void setConfig(HelmConfiguration config) {
+		this.config = config;
+	}
+    
 }

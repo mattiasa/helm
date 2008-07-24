@@ -59,12 +59,6 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 		log = Logger.getLogger(HelmMasterImpl.class.getName());
 		log.setLevel(Level.WARN);
 		
-		try {
-			serverSocket = new ServerSocket(serverPort, 10, 
-					InetAddress.getByName(bindAddr));
-		} catch (IOException e) {
-			throw new TerminatingHelmException("Couldn't create server socket on port " + serverPort, e);
-		}
 		
 		serverThread = new Thread(this);
 	}
@@ -109,6 +103,13 @@ public class HelmMasterImpl implements Runnable, HelmMaster {
 	 * @see se.su.it.helm.HelmMaster#run()
 	 */
 	public void run() {
+		
+		try {
+			serverSocket = new ServerSocket(serverPort, 10, 
+					InetAddress.getByName(bindAddr));
+		} catch (IOException e) {
+			log.error("Couldn't create server socket on port " + serverPort + " : " + e.getMessage());;
+		}
 		
 		if(stats) {
 			new StatHandler(this, log);

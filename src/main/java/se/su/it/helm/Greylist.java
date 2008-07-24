@@ -25,24 +25,12 @@ public class Greylist {
 
 	private String glmessage;
 	
-	
-	public Greylist() {
-		System.out.println("foo");
-	
-	}
-	
-	
-	
 	public void init()
 		throws TerminatingHelmException
 	{
 	
-		
 		this.log = Logger.getLogger(this.getClass());
 		
-		db = new Db(config.getJdbcDriver(),
-				config.getJdbcUrl(),
-					log);
 		rbl = new RBL(config.getConfiguration(), log);
 
  
@@ -57,6 +45,7 @@ public class Greylist {
 		gcdays = config.getGcDays();
 
 	}
+
 
 	void shutdown() throws TerminatingHelmException {
 		db.shutdownDriver();
@@ -462,6 +451,10 @@ public class Greylist {
 
 	public void setConfig(HelmConfiguration config) {
 		this.config = config;
+	}
+
+	public void setDb(Db db) {
+		this.db = db;
 	}
 
 }

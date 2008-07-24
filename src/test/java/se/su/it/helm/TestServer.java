@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.util.List;
 import org.apache.commons.configuration.BaseConfiguration;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
@@ -51,6 +53,12 @@ public class TestServer {
 		System.out.println("setup db");
 		System.out.println("start helm");
 
+		ApplicationContext context = new ClassPathXmlApplicationContext(
+				new String[] {"helm.xml"});
+
+		HelmConfiguration c = (HelmConfiguration)context.getBean("HelmConfiguration");
+		
+		
 		BaseConfiguration cfg = new BaseConfiguration();
 		
 		cfg.setProperty("jdbcUrl", "jdbc:hsqldb:mem:aname");
@@ -60,20 +68,15 @@ public class TestServer {
 		cfg.setProperty("delay", "5");
 		cfg.setProperty("rbldelay", "10");
 		cfg.setProperty("rbls", "pbl.spamhaus.org");
+
+		c.setConfiguration(cfg);
 		
-		HelmConfiguration testConfig = new HelmConfiguration(cfg); 
+		config = c;
 		
-		try {
-		server = new HelmMasterImpl();
+		server = (HelmMaster)context.getBean("HelmMaster");			
 		server.createDatabase();
 		server.startService();
-		} catch (HelmException e) {
-			System.err.println(e.getString());
-			throw e;
-		}
-		// setup server
-		 
-		 
+	
 		 
 	}
 	
