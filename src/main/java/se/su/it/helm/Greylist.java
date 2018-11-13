@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import org.apache.log4j.Logger;
 
 public class Greylist {
@@ -24,6 +25,7 @@ public class Greylist {
 	private long gcdays;
 
 	private String glmessage;
+        private SimpleDateFormat sqlTimestampFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	public void init()
 		throws TerminatingHelmException
@@ -66,7 +68,6 @@ public class Greylist {
 		Connection conn = null;
 		    
 		try {
-	        	
 			log.debug("Getting db connection for add");
 			conn = db.getConnection();
 	        	
@@ -77,10 +78,9 @@ public class Greylist {
 			statement.setString(1, data.getSenderIp());
 			statement.setString(2, data.getSenderAddress());
 			statement.setString(3, data.getRecipientAddress());
-			statement.setTimestamp(4,new Timestamp(System.currentTimeMillis()));
-			statement.setTimestamp(5,new Timestamp(System.currentTimeMillis()));
+			statement.setString(4, sqlTimestampFormat.format(new java.util.Date()));
+			statement.setString(5, sqlTimestampFormat.format(new java.util.Date()));
 			statement.setInt(6, 0);
-			
 			
 			log.debug("Executing statement: " + statement);
 			statement.execute();
@@ -188,10 +188,10 @@ public class Greylist {
 			statement = conn.prepareStatement("UPDATE greylist set connection_count=?, last_seen=? where id = ?");
 			
 			statement.setInt(1,data.getCount());
-			statement.setTimestamp(2,data.getLast_seen());
+			statement.setString(2, sqlTimestampFormat.format(data.getLast_seen()));
 			statement.setInt(3, data.getId());
 			
-			// log.debug("Executing statement: " + statement);
+			log.debug("Executing statement: " + statement);
 			statement.execute();
 			log.debug("TIMER: updateGreylistData: " + (System.currentTimeMillis() - starttime));
 
@@ -236,7 +236,7 @@ public class Greylist {
 			statement = conn.prepareStatement("SELECT id FROM greylist WHERE ip = ? and first_seen < ? and connection_count >= 1");
 			
 			statement.setString(1, data.getSenderIp());
-			statement.setTimestamp(2, new Timestamp(currentTime - shortDelay));
+			statement.setString(2, sqlTimestampFormat.format(new Timestamp(currentTime - shortDelay)));
 			
 			log.debug("Executing statement: " + statement);
 			rset = statement.executeQuery();
@@ -406,7 +406,7 @@ public class Greylist {
 			conn = db.getConnection();
 			long starttime = System.currentTimeMillis();
 			statement = conn.prepareStatement("DELETE FROM greylist WHERE last_seen <= ?");
-			statement.setTimestamp(1,new Timestamp(lastseen));
+			statement.setString(1, sqlTimestampFormat.format(new Timestamp(lastseen)));
 			statement.executeUpdate();
 			log.debug("TIMER: garbageCollectDatabase: " + (System.currentTimeMillis() - starttime));
 

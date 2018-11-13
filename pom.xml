@@ -3,17 +3,21 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>helm</groupId>
   <artifactId>helm</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4-pre</version>
   <name>helm</name>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
   <build>
     <defaultGoal>package</defaultGoal>
     <plugins>
       <plugin>
  	<artifactId>maven-compiler-plugin</artifactId>
 	<configuration>
-	  <source>1.5</source>
-	  <target>1.5</target>
+	  <source>10</source>
+	  <target>10</target>
 	</configuration>
+	<version>3.8.0</version>
       </plugin>
       <plugin>
  	<groupId>org.apache.maven.plugins</groupId>
@@ -23,7 +27,7 @@
 	    <exclude>**/TestServer*</exclude>
 	  </excludes>
 	</configuration>
-	
+	<version>3.0.0-M1</version>
       </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -35,6 +39,7 @@
             </goals>
           </execution>
         </executions>
+	<version>3.1.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -45,10 +50,13 @@
               <mainClass>se.su.it.helm.HelmServer</mainClass>
               <packageName>se.su.it.helm</packageName>
               <addClasspath>true</addClasspath>
+	      <!--
 	      <classpathPrefix>dependency</classpathPrefix>
+	      -->
             </manifest>
           </archive>
         </configuration>
+	<version>3.0.0</version>
       </plugin>
       
       <plugin>
@@ -59,17 +67,19 @@
             <goals>
               <goal>assembly</goal>
             </goals>
-            
-            
             <configuration>
-              <descriptor>configuration/assembly/dep.xml</descriptor>
+                <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+		<archive>
+		  <manifest>
+		    <mainClass>se.su.it.helm.HelmServer</mainClass>
+		  </manifest>
+		</archive>
             </configuration>
           </execution>
         </executions>
-        
       </plugin>
-      
-      
     </plugins>
   </build>
   <dependencies>
@@ -85,12 +95,11 @@
     </dependency>
 
 
-
     <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
-      <version>5.8</version>
-      <classifier>jdk15</classifier>
+      <version>6.10</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
@@ -122,21 +131,20 @@
       <artifactId>commons-collections</artifactId>
       <version>3.2</version>
     </dependency>
-	<dependency>
-		<groupId>hsqldb</groupId>
-		<artifactId>hsqldb</artifactId>
-		<version>1.8.0.7</version>
-	</dependency>
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring</artifactId>
-		<version>2.5.5</version>
-	</dependency>
-	<dependency>
-		<groupId>junit</groupId>
-		<artifactId>junit</artifactId>
-		<version>4.4</version>
-	</dependency>
-		    
+    <dependency>
+      <groupId>hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.8.0.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+      <version>2.5.5</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.4</version>
+    </dependency>
   </dependencies>
 </project>
